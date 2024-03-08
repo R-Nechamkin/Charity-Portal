@@ -8,9 +8,13 @@
     <table>
         <tr><th>ColOne</th></tr>
         <tbody>
+		{% for row in rows %}
             <tr>
-                <td>Thingy</td>
+                <td>{{row.street}}</td>
+			<td>{{row.name}}</td>
+			<td>{{row.city}}</td>
             </tr>
+		{% endfor %}
         </tbody>
     </table>
 </body>
