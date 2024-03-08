@@ -1,4 +1,10 @@
+import requests
+import json
 from flask import Flask, render_template
+
+
+api_key = "AIzaSyDm3NkpUP7s2-9eIctdLS2OZzcYKWnVvXc"
+api_url = "https://sheets.googleapis.com/v4/spreadsheets/1SMhSsePT-WJPna2oq5NnE2zyIVSOZycV9kEgkWHcNfs/values/Sheet1!A1:D5?key=" + api_key
 
 
 class MockDBRow:
@@ -26,10 +32,11 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    rows = [MockDBRow('Crescent', 'Rivka', 'bang'),
-            MockDBRow('Plastic', 'Devora', 'Passaic')
-            ]
-            
+    raw = requests.get(api_url)
+    print (raw)
+    rows = json.load(raw)
+
+    
     return render_template('Grid.html', rows = rows)
 
 
