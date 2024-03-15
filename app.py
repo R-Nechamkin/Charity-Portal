@@ -34,8 +34,8 @@ app = Flask(__name__)
 def home():
     raw = requests.get(api_url)
     print (raw)
-    rows = json.load(raw)
-
+    rows = raw.json()['values']
+    print(rows)
     
     return render_template('Grid.html', rows = rows)
 
