@@ -5,7 +5,7 @@ app.config['SECRET_KEY'] = 'secret'
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', message ='Hello World!')
 
 @app.route('/set-up', methods=('GET', 'POST'))
 def set_up():
@@ -16,10 +16,14 @@ def set_up():
             flash('Please enter the URL of your sheet')
 
         else:
-            return redirect(url_for('index'))
+            return redirect('/submitted/' + url)
 
     message = {
         'title': 'Message 1:',
         'content': 'Hello World!'
     }
     return render_template('set-up.html', message = message)
+
+@app.route('/submitted/<message>')
+def show_message(message):
+    return render_template('index.html', message = message)
