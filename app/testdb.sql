@@ -17,7 +17,9 @@ CREATE TABLE IF NOT EXISTS Spreadsheet(
 INSERT INTO Spreadsheet (sheet_id, url) VALUES (1, 'https://docs.google.com/spreadsheets/d/18szop7TqllS9pBAyCXZn7LRIvJbPRaw9-MDVcogLh1E');
 
 -- Table: User
-CREATE TABLE IF NOT EXISTS User (user_id INTEGER PRIMARY KEY, username TEXT NOT NULL, password text NOT NULL, sheet_id INTEGER REFERENCES Spreadsheet NOT NULL);
+CREATE TABLE IF NOT EXISTS User (user_id INTEGER PRIMARY KEY, username TEXT NOT NULL, password text NOT NULL, sheet_id INTEGER REFERENCES Spreadsheet);
+
+
 INSERT INTO User (user_id, username, password, sheet_id) VALUES (1, 'John Doe', 'secret', 1);
 
 COMMIT TRANSACTION;
