@@ -35,8 +35,9 @@ def get_url_by_user_id(user_id):
 
 
 def get_latest_pk_of_spreadsheet():
-    #TODO
-    return 2
+    conn = get_db_connection()
+    query = 'SELECT MAX(sheet_id) AS sheet_id from Spreadsheet'
+    return conn.execute(query).fetchone()['sheet_id']
 
 
 @app.route('/')
@@ -46,7 +47,7 @@ def index():
 
 @app.route('/set-up', methods=('GET', 'POST'))
 def set_up():
-    user_id = 1
+    user_id = '1'
     if request.method == 'POST':
         url = request.form['sheet_URL']
 
@@ -61,7 +62,7 @@ def set_up():
             relationship_sql = 'UPDATE User SET sheet_id = ? WHERE user_id = ?'
             conn.execute(relationship_sql, (sheet_id, user_id))
             conn.commit()
-            return redirect('/url-for/' + url)
+            return redirect('/url-for/' + user_id)
 
     message = {
         'title': 'Message 1:',
