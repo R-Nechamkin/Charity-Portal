@@ -1,51 +1,21 @@
 from flask import Flask, render_template, request, url_for, flash, redirect
-import sqlite3
+from flask import Blueprint
+from .database import *
 
-app = Flask(__name__)
-
-app.config['SECRET_KEY'] = 'secret'
-
-
-def set_up_database():
-    connection = sqlite3.connect('testdb.db')
-    with open('testdb.sql') as f:
-        connection.executescript(f.read())
+main = Blueprint('main', __name__)
 
 
-def get_db_connection():
-  #  set_up_database()
-    conn = sqlite3.connect('testdb.db')
-    conn.row_factory = sqlite3.Row
-    return conn
-
-
-def get_stuff_from_db():
-    conn = get_db_connection()
-    return conn.execute('SELECT * FROM User').fetchall()
-
-
-def get_url_by_user_id(user_id):
-    conn = get_db_connection()
-    query = """
-    SELECT url FROM Spreadsheet
-    JOIN User ON Spreadsheet.sheet_id = User.sheet_id
-    WHERE user_id = ?"""
-    result = conn.execute(query, user_id).fetchone()
-    return result['url']
-
-
-def get_latest_pk_of_spreadsheet():
-    conn = get_db_connection()
-    query = 'SELECT MAX(sheet_id) AS sheet_id from Spreadsheet'
-    return conn.execute(query).fetchone()['sheet_id']
-
-
-@app.route('/')
+@main.route('/')
 def index():
     return render_template('index.html', message='Hello World!')
 
 
-@app.route('/set-up', methods=('GET', 'POST'))
+@main.route('/profile')
+def profile():
+    return render_template('profile')
+
+
+@main.route('/set-up', methods=('GET', 'POST'))
 def set_up():
     user_id = '1'
     if request.method == 'POST':
@@ -71,12 +41,12 @@ def set_up():
     return render_template('set-up.html', message=message)
 
 
-@app.route('/submitted/<message>')
+@main.route('/submitted/<message>')
 def show_message(message):
     return render_template('index.html', message=message)
 
 
-@app.route('/url-for/<user_id>')
+@main.route('/url-for/<user_id>')
 def show_url(user_id):
     url = get_url_by_user_id(user_id)
     return redirect('/submitted/' + url)
