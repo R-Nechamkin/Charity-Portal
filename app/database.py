@@ -33,3 +33,4 @@ def get_latest_pk_of_spreadsheet():
     query = 'SELECT MAX(sheet_id) AS sheet_id from Spreadsheet'
     return conn.execute(query).fetchone()['sheet_id']
 
+
