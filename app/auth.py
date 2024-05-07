@@ -19,6 +19,21 @@ def signup():
     return render_template('signup.html')
 
 
+def manually_check_email(email):
+    conn = get_db_connection()
+    query = "SELECT * FROM User WHERE email = (?)"
+    row = conn.execute(query, (email,)).fetchone()
+    conn.close()
+    return row
+
+
+def insert_new_user(username, email, password):
+    conn = get_db_connection()
+    query = "INSERT INTO User (username, email, password) VALUES (?, ?, ?)"
+    conn.execute(query, (username, email, generate_password_hash(password)))
+    conn.commit()
+    conn.close()
+
 @auth.route('/signup', methods=['POST'])
 def signup_post():
     # code to validate and add user to database goes here
@@ -26,20 +41,15 @@ def signup_post():
     name = request.form.get('name')
     password = request.form.get('password')
 
-    user = db.session.query(User).filter_by(email=email).first() # if this returns a user, then the email already exists in database
+    user = manually_check_email(email)
 
     if user: # if a user is found, we want to redirect back to signup page so user can try again
         flash('Email already registered for different username.')
-        return redirect(url_for('auth.signup'))
+        return redirect(url_for('auth.login'))
 
-    # create a new user with the form data. Hash the password so the plaintext version isn't saved.
-    new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256'))
+    insert_new_user(name, email, password)
 
-    # add the new user to the database
-    db.session.add(new_user)
-    db.session.commit()
-
-    return redirect(url_for('main.setup'))
+    return redirect(url_for('main.set_up'))
 
 
 @auth.route('/logout')

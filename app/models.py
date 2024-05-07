@@ -35,5 +35,8 @@ class Application(Base):
     row_number = Column(Integer, nullable=False)
     sheet_id = Column(Integer, ForeignKey('Spreadsheet.sheet_id'))
 
-engine = create_engine('sqlite:///testdb.db')
-Base.metadata.create_all(engine)
+#
+# engine = create_engine('sqlite:///testdb.db')
+# Base.metadata.create_all(engine)
+print('All tables created successfully!')
+
