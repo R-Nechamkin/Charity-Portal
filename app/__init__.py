@@ -3,20 +3,22 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 
 # init SQLAlchemy so we can use it later in our models
+db = SQLAlchemy()
+
+
+def init_db(app):
+    with app.app_context():
+        db.init_app(app)
+        db.reflect()
 
 
 def create_app():
     app = Flask('app')
 
     app.config['SECRET_KEY'] = '9OLWxND4o83j4K4iuopO'
-    import os
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///testdb.sqlite'
 
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    app.config['SQLALCHEMY_DATABASE_URI'] = \
-        'sqlite:///' + os.path.join(basedir, 'database/testdb.sqlite')
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    global db
-    db = SQLAlchemy(app)
+    init_db(app)
 
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
@@ -37,6 +39,4 @@ def create_app():
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
-
     return app
-

@@ -65,12 +65,12 @@ def show_table(table_name):
 
 @main.route('/debug/orm')
 def try_orm():
-    def get_users_by_email_domain(domain):
-        # Query the User table for all users whose email address ends with the specified domain
-        users = User.query.filter(User.email.like(f'%@{domain}*')).all()
-        return users
-
-    result = ''
-    for user in get_users_by_email_domain(''):
-        result += user.username + user.email
-    return 'hello' + result
+    # def get_users_by_email_domain(domain):
+    #     # Query the User table for all users whose email address ends with the specified domain
+    #     users = User.query.filter(User.email.like(f'%@{domain}*')).all()
+    #     return users
+    #
+    # result = ''
+    # for user in get_users_by_email_domain(''):
+    #     result += user.username + user.email
+    return 'hello' + get_data(application_id= 1)
