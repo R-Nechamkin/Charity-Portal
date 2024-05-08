@@ -7,7 +7,7 @@ PRAGMA foreign_keys = off;
 BEGIN TRANSACTION;
 
 -- Table: Application
-CREATE TABLE IF NOT EXISTS Applications (application_id INTEGER PRIMARY KEY, paid boolean DEFAULT (FALSE), money_granted REAL, row_number INTEGER NOT NULL, sheet_id INTEGER REFERENCES Spreadsheet (sheet_id) NOT NULL);
+CREATE TABLE IF NOT EXISTS Applications (application_id INTEGER PRIMARY KEY, paid boolean DEFAULT (FALSE), money_granted REAL, row_number INTEGER NOT NULL, sheet_id INTEGER REFERENCES Spreadsheets (sheet_id) NOT NULL);
 
 -- Table: Spreadsheet
 CREATE TABLE IF NOT EXISTS Spreadsheets(
@@ -17,7 +17,11 @@ CREATE TABLE IF NOT EXISTS Spreadsheets(
 INSERT INTO Spreadsheets (sheet_id, url) VALUES (1, 'https://docs.google.com/spreadsheets/d/18szop7TqllS9pBAyCXZn7LRIvJbPRaw9-MDVcogLh1E');
 
 -- Table: User
-CREATE TABLE IF NOT EXISTS Users (user_id INTEGER PRIMARY KEY, username TEXT NOT NULL, password text NOT NULL, sheet_id INTEGER REFERENCES Spreadsheet,
+CREATE TABLE IF NOT EXISTS Users
+(user_id INTEGER PRIMARY KEY,
+ username TEXT NOT NULL,
+ password text NOT NULL,
+ sheet_id INTEGER REFERENCES Spreadsheets,
 email TEXT CHECK (email LIKE '%@%.%'));
 
 

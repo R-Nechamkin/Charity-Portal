@@ -5,7 +5,7 @@ from app import create_app, db
 
 def set_up_database():
     connection = sqlite3.connect('testdb.sqlite')
-    with open('testdb.sql') as f:
+    with open('db.sql') as f:
         connection.executescript(f.read())
 
 
