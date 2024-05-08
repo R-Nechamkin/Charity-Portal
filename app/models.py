@@ -1,42 +1,36 @@
-# This code came straight from chatgpt so hopefully it's correct
-
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, Float, ForeignKey, CheckConstraint
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from flask_login import UserMixin
 
-Base = declarative_base()
+from app import db, create_app
 
-class Spreadsheet(Base):
-    __tablename__ = 'Spreadsheet'
 
-    sheet_id = Column(Integer, primary_key=True)
-    url = Column(String, nullable=False)
+class Spreadsheet(db.Model):
+    __tablename__ = 'Spreadsheets'
+
+    sheet_id = db.Column(db.Integer, primary_key=True)
+    url = db.Column(db.String(255), nullable=False)
 
     users = relationship('User', backref='spreadsheet')
     applications = relationship('Application', backref='spreadsheet')
 
 
-class User(Base):
-    __tablename__ = 'User'
+class User(UserMixin, db.Model):
+    __tablename__ = 'Users'
 
-    user_id = Column(Integer, primary_key=True)
-    username = Column(String, nullable=False)
-    password = Column(String, nullable=False)
-    email = Column(String, nullable=False)
-    sheet_id = Column(Integer, ForeignKey('Spreadsheet.sheet_id'))
+    user_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(255), nullable=False)
+    sheet_id = db.Column(db.Integer, db.ForeignKey('Spreadsheets.sheet_id'))
 
 
-class Application(Base):
-    __tablename__ = 'Application'
+class Application(db.Model):
+    __tablename__ = 'Applications'
 
-    application_id = Column(Integer, primary_key=True)
-    paid = Column(Boolean, default=False)
-    money_granted = Column(Float)
-    row_number = Column(Integer, nullable=False)
-    sheet_id = Column(Integer, ForeignKey('Spreadsheet.sheet_id'))
+    application_id = db.Column(db.Integer, primary_key=True)
+    paid = db.Column(db.Boolean, default=False)
+    money_granted = db.Column(db.Float)
+    row_number = db.Column(db.Integer, nullable=False)
+    sheet_id = db.Column(db.Integer, db.ForeignKey('Spreadsheets.sheet_id'))
 
-#
-# engine = create_engine('sqlite:///testdb.db')
-# Base.metadata.create_all(engine)
-print('All tables created successfully!')
 

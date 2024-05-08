@@ -1,31 +1,31 @@
 import sqlite3
 
+from app import create_app, db
+
+
 def set_up_database():
-    connection = sqlite3.connect('testdb.db')
+    connection = sqlite3.connect('testdb.sqlite')
     with open('testdb.sql') as f:
         connection.executescript(f.read())
 
 
 def get_db_connection():
-  #  set_up_database()
-    conn = sqlite3.connect('testdb.db')
+    conn = sqlite3.connect('testdb.sqlite')
     conn.row_factory = sqlite3.Row
     return conn
 
 
 def get_stuff_from_db():
     conn = get_db_connection()
-    return conn.execute('SELECT * FROM User').fetchall()
+    return conn.execute('SELECT * FROM Users').fetchall()
 
 
 def get_url_by_user_id(user_id):
     conn = get_db_connection()
     query = """
-        SELECT url FROM Spreadsheet
-        JOIN User ON Spreadsheet.sheet_id = User.sheet_id
+        SELECT url FROM Spreadsheets
+        JOIN Users ON Spreadsheets.sheet_id = Users.sheet_id
         WHERE user_id = (?)"""
-
-
 
     result = conn.execute(query, (user_id, )).fetchone()
     return result[0]
@@ -33,8 +33,10 @@ def get_url_by_user_id(user_id):
 
 def get_latest_pk_of_spreadsheet():
     conn = get_db_connection()
-    query = 'SELECT MAX(sheet_id) AS sheet_id from Spreadsheet'
+    query = 'SELECT MAX(sheet_id) AS sheet_id from Spreadsheets'
     return conn.execute(query).fetchone()['sheet_id']
+
+
 
 
 def get_all_data_from_table(table_name):
@@ -44,7 +46,7 @@ def get_all_data_from_table(table_name):
 
 def add_a_user_to_db():
     conn = get_db_connection()
-    query = """INSERT INTO User (username, password, email) VALUES ('User 1', 'password1', 'email1@example.com')"""
+    query = """INSERT INTO Users (username, password, email) VALUES ('User 1', 'password1', 'email1@example.com')"""
     conn.execute(query)
     conn.commit()
     conn.close()
@@ -61,4 +63,3 @@ def get_some_data():
 
     result = conn.execute(query, (user_id,))
     return result
-
