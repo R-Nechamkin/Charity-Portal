@@ -3,7 +3,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import current_user, login_user, logout_user, login_required
-from .models import User
+from .models import User, Spreadsheet
 from . import db
 
 auth = Blueprint('auth', __name__)
@@ -42,6 +42,7 @@ def signup_post():
     email = request.form.get('email')
     name = request.form.get('name')
     password = request.form.get('password')
+    sheet_url = request.form.get('sheet_url')
 
     user = User.query.filter_by(email=email).first() # if this returns a user, then the email already exists in database
 
@@ -49,8 +50,17 @@ def signup_post():
         flash('Email address already exists')
         return redirect(url_for('auth.signup'))
 
+
+    #create spreadsheet in database
+    sheet = Spreadsheet.query.filter_by(url=sheet_url).first() # if this returns a user, then the sheet already exists in database
+    if not sheet:
+        sheet = Spreadsheet(url = sheet_url)
+        db.session.add(sheet)
+        db.session.commit()
+
     # create new user with the form data. Hash the password so plaintext version isn't saved.
-    new_user = User(email=email, username=name, password=generate_password_hash(password))
+    new_user = User(email=email, username=name, password=generate_password_hash(password), sheet_id = sheet.sheet_id)
+
 
     # add the new user to the database
     db.session.add(new_user)
