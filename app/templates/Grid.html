@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SeeStuff</title>
+</head>
+<body>
+    <table>
+        <tr><th>ColOne</th></tr>
+        <tbody>
+		{% for row in rows %}
+            <tr>
+                <td>{{row.street}}</td>
+			<td>{{row.name}}</td>
+			<td>{{row.city}}</td>
+            </tr>
+		{% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
