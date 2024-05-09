@@ -1,34 +1,36 @@
-from datetime import datetime, timezone
-from typing import Optional
-import sqlalchemy as sa
-import sqlalchemy.orm as so
-from app import db
+from sqlalchemy.orm import relationship
+from flask_login import UserMixin
+
+from app import db, create_app
 
 
-class User(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True,
-                                                unique=True)
-    email: so.Mapped[str] = so.mapped_column(sa.String(120), index=True,
-                                             unique=True)
-    password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
+class Spreadsheet(db.Model):
+    __tablename__ = 'Spreadsheets'
 
-    posts: so.WriteOnlyMapped['Post'] = so.relationship(
-        back_populates='author')
+    sheet_id = db.Column(db.Integer, primary_key=True)
+    url = db.Column(db.String(255), nullable=False)
 
-    def __repr__(self):
-        return '<User {}>'.format(self.username)
+    users = relationship('User', backref='spreadsheet')
+    applications = relationship('Application', backref='spreadsheet')
 
 
-class Post(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    body: so.Mapped[str] = so.mapped_column(sa.String(140))
-    timestamp: so.Mapped[datetime] = so.mapped_column(
-        index=True, default=lambda: datetime.now(timezone.utc))
-    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id),
-                                               index=True)
+class User(UserMixin, db.Model):
+    __tablename__ = 'Users'
 
-    author: so.Mapped[User] = so.relationship(back_populates='posts')
+    user_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(255), nullable=False)
+    sheet_id = db.Column(db.Integer, db.ForeignKey('Spreadsheets.sheet_id'))
 
-    def __repr__(self):
-        return '<Post {}>'.format(self.body)
+
+class Application(db.Model):
+    __tablename__ = 'Applications'
+
+    application_id = db.Column(db.Integer, primary_key=True)
+    paid = db.Column(db.Boolean, default=False)
+    money_granted = db.Column(db.Float)
+    row_number = db.Column(db.Integer, nullable=False)
+    sheet_id = db.Column(db.Integer, db.ForeignKey('Spreadsheets.sheet_id'))
+
+
