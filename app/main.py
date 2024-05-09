@@ -74,3 +74,5 @@ def try_orm():
     # for user in get_users_by_email_domain(''):
     #     result += user.username + user.email
     return 'hello' + get_data(application_id= 1)
+
+

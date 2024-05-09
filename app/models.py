@@ -1,3 +1,4 @@
+from flask import jsonify
 from sqlalchemy import text
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin
@@ -43,6 +44,9 @@ class User(UserMixin):
         self.id = user_id
         self.username = username
         self.password = password
+
+
+
 
 
 def get_data(application_id):

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Debugging</title>
+</head>
+<body>
+  <div class = 'message'>
+    <h3>{{message['title']}}</h3>
+    <p>{{message['content']}}</p>
+  </div>
+
+
+  <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Column1</th>
+              <th>Column2</th>
+                <th>Column3</th>
+              <th>Column4</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in table_data %}
+            <tr>
+                <td>{{ row[0] }}</td> <!-- Assuming ID is the first column -->
+                <td>{{ row[1] }}</td> <!-- Assuming Name is the second column -->
+                <td>{{row[2]}}</td>
+              <td>{{row[3]}}</td>
+              <td>{{row[4]}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
