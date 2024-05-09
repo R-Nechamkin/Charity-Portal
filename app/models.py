@@ -1,8 +1,14 @@
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin
 
-from app import db, create_app
 
+from app import db, create_app, login
+
+
+@login.user_loader
+def load_user(id):
+    return db.session.get(User, int(id))
+    
 
 class Spreadsheet(db.Model):
     __tablename__ = 'Spreadsheets'
@@ -23,6 +29,10 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(255), nullable=False)
     sheet_id = db.Column(db.Integer, db.ForeignKey('Spreadsheets.sheet_id'))
 
+
+    def get_id(self):
+        return self.user_id
+        
 
 class Application(db.Model):
     __tablename__ = 'Applications'

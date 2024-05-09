@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, url_for, flash, redirect
 from flask import Blueprint
 from flask_sqlalchemy.session import Session
 from sqlalchemy import select
+from flask_login import login_required
 
 from .database import *
 from .models import *
@@ -10,13 +11,15 @@ main = Blueprint('main', __name__)
 
 
 @main.route('/')
+@main.route('/index')
+@login_required 
 def index():
     return render_template('index.html', message='Hello World!')
 
 
 @main.route('/profile')
 def profile():
-    return render_template('profile')
+    return render_template('profile.html')
 
 
 @main.route('/set-up', methods=('GET', 'POST'))
