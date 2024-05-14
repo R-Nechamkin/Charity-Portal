@@ -9,7 +9,7 @@ import json
 
 from .database import *
 from .models import *
-from . import api_key
+from .secrets import API_KEY
 
 main = Blueprint('main', __name__)
 
@@ -22,7 +22,7 @@ def index():
     print(current_user.sheet_id)
     if(current_user.sheet_id):
         sheet_url = Spreadsheet.query.get(current_user.sheet_id).url
-        api_url = "https://sheets.googleapis.com/v4/spreadsheets/" + sheet_url + "?key=" + api_key
+        api_url = "https://sheets.googleapis.com/v4/spreadsheets/" + sheet_url + "?key=" + API_KEY
         raw = requests.get(api_url)
         print (raw)
         rows = raw.json()['values']
