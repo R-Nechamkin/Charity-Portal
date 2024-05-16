@@ -18,7 +18,7 @@ login = LoginManager(app)
 
 #variables
 
-api_url = "https://sheets.googleapis.com/v4/spreadsheets/{}?key=" + API_KEY
+#api_url = "https://sheets.googleapis.com/v4/spreadsheets/{}?key=" + API_KEY
 
 
 

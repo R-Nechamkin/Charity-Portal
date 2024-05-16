@@ -42,21 +42,25 @@ def signup_post():
     email = request.form.get('email')
     name = request.form.get('name')
     password = request.form.get('password')
-    sheet_url = request.form.get('sheet_url')
+    # sheet_url = request.form.get('sheet_url')
 
     user = User.query.filter_by(email=email).first() # if this returns a user, then the email already exists in database
 
     if user: # if a user is found, we want to redirect back to signup page so user can try again  
         flash('Email address already exists')
         return redirect(url_for('auth.signup'))
+    
+    pattern = r'^[a-zA-Z0-9]+$'
+    # We use the username in a lot of random places, so for simplicity's sake, let's require it to be simple
+    if bool(re.match(pattern, s)) and ' ' not in s:
+        flash('Username must be alphanumeric and cannot contain spaces.')
 
-
-    #create spreadsheet in database
-    sheet = Spreadsheet.query.filter_by(url=sheet_url).first() # if this returns a user, then the sheet already exists in database
-    if not sheet:
-        sheet = Spreadsheet(url = sheet_url)
-        db.session.add(sheet)
-        db.session.commit()
+    # #create spreadsheet in database
+    # sheet = Spreadsheet.query.filter_by(url=sheet_url).first() # if this returns a user, then the sheet already exists in database
+    # if not sheet:
+        # sheet = Spreadsheet(url = sheet_url)
+        # db.session.add(sheet)
+        # db.session.commit()
 
     # create new user with the form data. Hash the password so plaintext version isn't saved.
     new_user = User(email=email, username=name, password=generate_password_hash(password), sheet_id = sheet.sheet_id)

@@ -1,0 +1,18 @@
+<!--fields.html-->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="column is-4 is-offset-4">
+    <h3 class="title">Select Fields</h3>
+    <div class="box">
+        <form method="POST" action="/fields">
+            <div class="field">
+                <div class="control">
+                    <input class="input is-large" type="number" name="num_fields" placeholder="Number of Fields" autofocus="">
+                </div>
+            </div>
+            <button class="button is-block is-info is-large is-fullwidth">Submit</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

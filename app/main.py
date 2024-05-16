@@ -9,7 +9,7 @@ import json
 
 from .database import *
 from .models import *
-from .secrets import API_KEY
+from .secrets import API_KEY, DB_CONNECTOR
 
 main = Blueprint('main', __name__)
 
@@ -20,8 +20,8 @@ main = Blueprint('main', __name__)
 def index():
     print(current_user)
     print(current_user.sheet_id)
-    if(current_user.sheet_id):
-        sheet_url = Spreadsheet.query.get(current_user.sheet_id).url
+    if(current_user.Sheet):
+        table_name = current_user.Sheet.table_name
         api_url = "https://sheets.googleapis.com/v4/spreadsheets/" + sheet_url + "?key=" + API_KEY
         raw = requests.get(api_url)
         print (raw)
@@ -37,32 +37,33 @@ def index():
 def profile():
     return render_template('profile.html')
 
-#
-# @main.route('/set-up', methods=('GET', 'POST'))
-# def set_up():
-#     user_id = '1'
-#     if request.method == 'POST':
-#         url = request.form['sheet_URL']
-#
-#         if not url:
-#             flash('Please enter the URL of your sheet')
-#
-#         else:
-#             conn = get_db_connection()
-#             insertion_sql = 'INSERT INTO Spreadsheets (url) VALUES (?)'
-#             conn.execute(insertion_sql, (url,))
-#             sheet_id = get_latest_pk_of_spreadsheet()
-#             relationship_sql = 'UPDATE Users SET sheet_id = ? WHERE user_id = ?'
-#             conn.execute(relationship_sql, (sheet_id, user_id))
-#             conn.commit()
-#             return redirect('/url-for/' + str(user_id))
-#
-#     message = {
-#         'title': 'Message 1:',
-#         'content': get_stuff_from_db()
-#     }
-#     return render_template('set-up.html', message=message)
-#
+
+@main.route('/fields', methods=['GET', 'POST'])
+@login_required
+def fields():
+    if request.method == 'POST':
+        num_fields = int(request.form.get('num_fields'))
+        return redirect(url_for('field_details/' +str(num_fields) ))
+    return render_template('fields.html')
+
+
+
+@main.route('/field_details/<num_fields>', methods=['GET', 'POST'])
+@login_required
+def field_details():
+    if request.method == 'POST':
+        field_details = []
+        for i in range(num_fields):
+            field_name = request.form.get(f'field_name_{i}')
+            field_type = request.form.get(f'field_type_{i}')
+            field_details.append((field_name, field_type))
+        table_name = current_user.username + 'Table'
+        create_table(table_name, field_details, current_user)
+        return redirect(url_for('index'))
+    return render_template('field_details.html', num_fields=int(num_fields))
+
+
+
 
 @main.route('/submitted/<message>')
 def show_message(message):

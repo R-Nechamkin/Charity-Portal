@@ -14,10 +14,11 @@ class Spreadsheet(db.Model):
     __tablename__ = 'Spreadsheets'
 
     sheet_id = db.Column(db.Integer, primary_key=True)
-    url = db.Column(db.String(255), nullable=False)
+    table_name = db.Column(db.String(255), nullable=False)
 
     users = relationship('User', backref='spreadsheet')
-    applications = relationship('Application', backref='spreadsheet')
+    # applications = relationship('Application', backref='spreadsheet')
+    fields = relationship('Field', backref='spreadsheet')
 
 
 class User(UserMixin, db.Model):
@@ -34,13 +35,21 @@ class User(UserMixin, db.Model):
         return self.user_id
         
 
-class Application(db.Model):
-    __tablename__ = 'Applications'
+# class Application(db.Model):
+    # __tablename__ = 'Applications'
 
-    application_id = db.Column(db.Integer, primary_key=True)
-    paid = db.Column(db.Boolean, default=False)
-    money_granted = db.Column(db.Float)
-    row_number = db.Column(db.Integer, nullable=False)
+    # application_id = db.Column(db.Integer, primary_key=True)
+    # paid = db.Column(db.Boolean, default=False)
+    # money_granted = db.Column(db.Float)
+    # row_number = db.Column(db.Integer, nullable=False)
+    # sheet_id = db.Column(db.Integer, db.ForeignKey('Spreadsheets.sheet_id'))
+
+
+class Field(db.Model):
+    __tablename__ = 'Fields'
+    
+    field_id = db.Column(db.Integer, primary_key =True)
+    name = db.Column(db.String(100), nullable=False)
+    data_type = db.Column(db.String(20), nullable=False)
+    
     sheet_id = db.Column(db.Integer, db.ForeignKey('Spreadsheets.sheet_id'))
-
-
