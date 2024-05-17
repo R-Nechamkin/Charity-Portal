@@ -1,0 +1,23 @@
+<!--import-data.html-->
+{% extends "flash.html" %}
+
+{% block content %}
+
+        <<h3>Import Data From Google Sheets</h3>
+        <p>Make your sheet accessible to whoever has the link</p>
+        <form method="POST" action="{{ url_for('insert_data') }}">
+            <label>
+                Spreadsheet URL:
+                <input type="text" name="url" id="url_control">
+            </label>
+            <label>
+                What number sheet is your data on?(It's probably on 1)
+                <input type="number" name="sheet_num" min="1" max="100" step="1" value="1">
+            </label>
+            <label><input type="checkbox" name="has_headers">My data has column headers</label><br>
+            <button type="submit" name="import_sheets">Import from Google Sheets</button>
+        </form>
+
+{% endblock %}
+
+

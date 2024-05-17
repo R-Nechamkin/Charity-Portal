@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Insert Data</h1>
+    <a href="{{ url_for('manual-insert') }}"><button>Insert Data Manually</button></a>
+    <a href="{{ url_for('import-data') }}"><button>Import Data from Google Sheets</button></a>
+{%endblock%}
