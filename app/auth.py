@@ -60,8 +60,8 @@ def signup_post():
     
     pattern = r'^[a-zA-Z0-9]*$'
     # We use the username in a lot of random places, so for simplicity's sake, let's require it to be simple
-    if bool(re.match(pattern, name)) and ' ' not in name:
-        flash('Username must be alphanumeric and cannot contain spaces.')
+    if ' ' not in name:
+        flash('Username cannot contain spaces.')
         return redirect(url_for('auth.signup'))
 
     # #create spreadsheet in database
