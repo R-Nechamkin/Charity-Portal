@@ -10,15 +10,15 @@ def load_user(id):
     return db.session.get(User, int(id))
     
 
-class Spreadsheet(db.Model):
-    __tablename__ = 'Spreadsheets'
+class Charity(db.Model):
+    __tablename__ = 'Charities'
 
-    sheet_id = db.Column(db.Integer, primary_key=True)
+    charity_id = db.Column(db.Integer, primary_key=True)
     table_name = db.Column(db.String(255), nullable=False)
 
-    users = relationship('User', backref='spreadsheet')
+    users = relationship('User', backref='charity')
     # applications = relationship('Application', backref='spreadsheet')
-    fields = relationship('Field', backref='spreadsheet')
+    fields = relationship('Field', backref='charity')
 
 
 class User(UserMixin, db.Model):
@@ -28,7 +28,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(255), nullable=False)
-    sheet_id = db.Column(db.Integer, db.ForeignKey('Spreadsheets.sheet_id'))
+    charity_id = db.Column(db.Integer, db.ForeignKey('Charities.charity_id'))
 
 
     def get_id(self):
@@ -52,4 +52,6 @@ class Field(db.Model):
     name = db.Column(db.String(100), nullable=False)
     data_type = db.Column(db.String(20), nullable=False)
     
-    sheet_id = db.Column(db.Integer, db.ForeignKey('Spreadsheets.sheet_id'))
+    charity_id = db.Column(db.Integer, db.ForeignKey('Charities.charity_id'))
+
+

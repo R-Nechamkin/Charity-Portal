@@ -38,7 +38,7 @@ def get_data_from_api(url, sheet_index, headers=False):
 @login_required
 def index():
     print(current_user)
-    print(current_user.sheet_id)
+    print(current_user.charity_id)
     if ():
         rows = get_data_from_api('18szop7TqllS9pBAyCXZn7LRIvJbPRaw9-MDVcogLh1E')
 

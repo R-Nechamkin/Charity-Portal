@@ -6,17 +6,25 @@ from . import db
 from .models import *
 
 
+def get_sql_type(field_type):
+    dictionary = {"VARCHAR(255)": db.String(255), "INT": db.Integer,
+            "DECIMAL": db.Decimal, "BOOLEAN": db.Boolean,
+            "DATE": db.Date, "TEXT": db.Text, "TIMESTAMP": db.DateTime}
+
+    return dictionary[field_type.upper()]
+
+
+
 def create_data_table(table_name, field_details):
     metadata = MetaData()
     fields = []
     for field_name, field_type in field_details:
         if field_type == 'Email':
-            fields.append(Column(field_name, String(255), nullable=False))
             constraint = CheckConstraint(f"email_format({field_name})", name=f"chk_{field_name}_email_format")
+            fields.append(Column(field_name, String(255), constraint = constraint))
             columns.append(Column(field_name, field_type, constraint=constraint))
-
         else:
-            fields.append(Column(field_name, field_type))
+            fields.append(Column(field_name, get_sql_type(field_type)))
     table = Table(table_name, metadata, *fields)
     metadata.create_all(db.engine)
 
@@ -34,11 +42,11 @@ def get_last_id(table_name):
 
 
 def create_spreadsheet_record(user, table_name):
-    new_sheet = Spreadsheet(table_name=table_name)
+    new_sheet = Charity(table_name=table_name)
     db.session.add(new_sheet)
 
     sheet_id = get_last_id('Spreadsheets')
-    user.sheet_id = sheet_id
+    user.charity_id = sheet_id
     return sheet_id
 
 
