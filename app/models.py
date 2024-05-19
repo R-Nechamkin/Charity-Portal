@@ -14,7 +14,7 @@ class Charity(db.Model):
     __tablename__ = 'Charities'
 
     charity_id = db.Column(db.Integer, primary_key=True)
-    table_name = db.Column(db.String(255), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
 
     users = relationship('User', backref='charity')
     # applications = relationship('Application', backref='charity')
@@ -29,7 +29,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), nullable=False)
-    charity_id = db.Column(db.Integer, db.ForeignKey('Charities.charity_id'))
+    charity_id = db.Column(db.Integer, db.ForeignKey('Charities.charity_id'), nullable=False)
 
 
     def get_id(self):

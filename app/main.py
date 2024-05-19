@@ -69,9 +69,9 @@ def field_details(num_fields):
         for i in range(num_fields):
             field_name = request.form.get(f'field_name_{i}')
             field_type = request.form.get(f'field_type_{i}')
-            field_details.append((field_name, field_type))
-        table_name = current_user.username + 'Table'
-        create_table(table_name, field_details, current_user)
+            field_num = i
+            field_details.append((field_name, field_type, field_num))
+        create_table(field_details, user=current_user)
         return redirect(url_for('index'))
     return render_template('field_details.html', num_fields=int(num_fields))
 
