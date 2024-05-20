@@ -47,6 +47,7 @@ def index():
     return render_template('index.html', message='No spreadsheet registered for this user')
 
 
+@login_required
 @main.route('/profile')
 def profile():
     return render_template('profile.html')
@@ -76,17 +77,23 @@ def field_details(num_fields):
     return render_template('field_details.html', num_fields=int(num_fields))
 
 
+@login_required
 @main.route('/insert-data')
 def insert_data():
-    return render_template('insert-data.html')
+    if not current_user.charity.fields:
+        return redirect(url_for('fields'))
+        
+    return render_template('insert-data.html', manual_insertion_link =  url_for('main.manual_insert'), import_data_link = url_for('main.import_data'))
 
 
-@main.route('/insert-data/manual')
+@login_required
+@main.route('/manual-insert')
 def manual_insert():
     return render_template('manual-insert.html')
 
 
-@main.route('/insert-data/import', methods=['GET', 'POST'])
+@login_required
+@main.route('/import-data', methods=['GET', 'POST'])
 def import_data():
     if request.method == 'POST':
         form = request.form.to_dict()

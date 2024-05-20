@@ -60,7 +60,7 @@ def signup_post():
     
     pattern = r'^[a-zA-Z0-9]+$'
     # We use the username in a lot of random places, so for simplicity's sake, let's require it to be simple
-    if bool(re.match(pattern, name)) and ' ' not in name:
+    if not bool(re.match(pattern, name)) or ' ' in name:
         flash('Username must be alphanumeric and cannot contain spaces.')
         return redirect(url_for('auth.signup'))
 
@@ -72,7 +72,7 @@ def signup_post():
         db.session.commit()
 
     # create new user with the form data. Hash the password so plaintext version isn't saved.
-    new_user = User(email=email, username=name, password=generate_password_hash(password), charity_id = charity.id)
+    new_user = User(email=email, username=name, password=generate_password_hash(password), charity_id = charity.charity_id)
     print('created the user')
 
     # add the new user to the database
