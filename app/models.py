@@ -1,3 +1,4 @@
+from sqlalchemy import CheckConstraint
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin
 
@@ -127,6 +128,19 @@ class TimestampDatum(db.Model):
 
     data_id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.DateTime, nullable=False)
-    
+
     field_id = db.Column(db.Integer, db.ForeignKey('Fields.field_id'), nullable=False)
     record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
+
+
+class EmailDatum(db.Model):
+    __tablename__ = 'Email_Data'
+
+    data_id = db.Column(db.Integer, primary_key=True)
+    data = db.Column(db.Text, nullable=False)
+
+    field_id = db.Column(db.Integer, db.ForeignKey('Fields.field_id'), nullable=False)
+    record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
+
+    #TODO: create the constraint for email formatting
+    #constraint = CheckConstraint(sqltext="", name="email_format")

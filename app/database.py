@@ -7,9 +7,10 @@ from .models import *
 
 
 def get_sql_type(field_type):
-    dictionary = {"VARCHAR(255)": db.String(255), "INT": db.Integer,
+    dictionary = {"SHORT_TEXT": db.String(255), "INT": db.Integer,
             "DECIMAL": db.Decimal, "BOOLEAN": db.Boolean,
-            "DATE": db.Date, "TEXT": db.Text, "TIMESTAMP": db.DateTime}
+            "DATE": db.Date, "TEXT": db.Text, "TIMESTAMP": db.DateTime,
+                  "EMAIL": db.Email}
 
     return dictionary[field_type.upper()]
 
@@ -32,7 +33,51 @@ def create_table(field_details, user):
     db.session.commit()
 
 
+def insert_datum(datum, record, field):
+    if field.data_type == 'SHORT_TEXT':
+        return ShortTextDatum(datum=datum, record=record, field=field)
+    elif field.data_type == 'TEXT':
+        return TextDatum(datum=datum, record=record, field=field)
+    elif field.data_type == 'INT':
+        return IntDatum(datum=datum, record=record, field=field)
+    elif field.data_type == 'DECIMAL':
+        return DecimalDatum(datum=datum, record=record, field=field)
+    elif field.data_type == 'BOOLEAN':
+        return BooleanDatum(datum=datum, record=record, field=field)
+    elif field.data_type == 'DATE':
+        return DateDatum(datum=datum, record=record, field=field)
+    elif field.data_type == 'TIMESTAMP':
+        return TimestampDatum(datum=datum, record=record, field=field)
+    elif field.data_type == 'EMAIL':
+        return EmailDatum(datum=datum, record=record, field=field)
+    else:
+        raise Exception('Field type has no corresponding table')
 
+
+def internal_insert_user_data(charity, data, headers, records):
+    for header in headers:
+        field=Field.query.filter_by(name=header).one()
+        for datum, record in data, records:
+            try:
+                datum=insert_datum(datum=datum, record=record, field=field)
+            except Exception as e:
+                raise Exception('Database error occured while inserting data') from e
+            db.session.add(datum)
+
+
+def insert_user_data(charity, data, headers):
+    try:
+        records = []
+        for _ in data:
+            record = Record(charity=charity)
+            db.session.add(record)
+            records.append(record)
+
+        internal_insert_user_data(charity=charity, data=data, headers=headers, records=records)
+
+        db.session.commit()
+    except Exception as e:
+        raise Exception('Database error occured while inserting data') from e
 
 
 from sqlalchemy import create_engine, DDL

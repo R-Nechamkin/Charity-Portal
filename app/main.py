@@ -1,3 +1,5 @@
+import traceback
+
 from flask import Flask, render_template, request, url_for, flash, redirect, jsonify
 from flask import Blueprint
 from flask_sqlalchemy.session import Session
@@ -14,16 +16,13 @@ from .secrets import API_KEY, DB_CONNECTOR
 main = Blueprint('main', __name__)
 
 
-def get_data_from_api(url, sheet_index, headers=False):
+def get_data_from_api(url, sheet_index):
     api_begin = "https://sheets.googleapis.com/v4/spreadsheets/" + url + '/'
     api_end = "?key=" + API_KEY['sheets']
     sheet_metadata = requests.get(api_begin + api_end).json()
     sheet_title = sheet_metadata['sheets'][sheet_index]['properties']['title']
     cell_count = sheet_metadata['sheets'][sheet_index]['properties']['gridProperties']
-    if headers:
-        cell_begin = 'R2C1'
-    else:
-        cell_begin = 'R1C1'
+    cell_begin = 'R1c1'
     cell_end = cell_count['rowCount'] + 'C' + cell_count['columnCount']
     api_url = api_begin + 'values/' + sheet_title + '!' + cell_begin + ':' + cell_end + api_end
     print('API url:', api_url)
@@ -32,6 +31,7 @@ def get_data_from_api(url, sheet_index, headers=False):
     rows = raw.json()['values']
     print(rows)
     return rows
+
 
 @main.route('/')
 @main.route('/index')
@@ -85,9 +85,29 @@ def insert_data():
 def manual_insert():
     return render_template('manual-insert.html')
 
-@main.route('/insert-data/import')
+
+@main.route('/insert-data/import', methods=['GET', 'POST'])
 def import_data():
+    if request.method == 'POST':
+        form = request.form.to_dict()
+
+        data = get_data_from_api(url=form['url'], sheet_index=(int(form['sheet_num']) - 1))
+
+        if form['has_headers']:
+            headers = data[0]
+            data = data[1:]
+        else:
+            headers = Field.query(Field.name).filter_by(charity_id=current_user.charity_id).order_by(Field.order).all()
+
+        try:
+            insert_user_data(charity=current_user.charity, data=data, headers=headers)
+        #TODO: Really I should only catch database exceptions
+        except Exception as e:
+            flash('Something went wrong while importing your file. Check your data and try again.')
+            print(traceback.format_exc())
+
     return render_template('import-data.html')
+
 
 @main.route('/submitted/<message>')
 def show_message(message):
