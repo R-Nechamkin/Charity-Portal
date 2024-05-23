@@ -48,6 +48,7 @@ class Field(db.Model):
     
     charity_id = db.Column(db.Integer, db.ForeignKey('Charities.charity_id'))
     
+    
 class Record(db.Model):
     __tablename__ = 'Records'
 
@@ -84,8 +85,18 @@ class IntDatum(db.Model):
 
 
 #TODO: Rename to NumericDatum
-class DecimalDatum(db.Model):
-    __tablename__ = 'Decimal_Data'
+class NumericDatum(db.Model):
+    __tablename__ = 'Numeric_Data'
+
+    data_id = db.Column(db.Integer, primary_key=True)
+    data = db.Column(db.Numeric, nullable=False)
+    
+    field_id = db.Column(db.Integer, db.ForeignKey('Fields.field_id'), nullable=False)
+    record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
+    
+    
+class CurrencyDatum(db.Model):
+    __tablename__ = 'Currency_Data'
 
     data_id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.Numeric, nullable=False)
