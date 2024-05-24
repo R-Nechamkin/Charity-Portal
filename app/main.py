@@ -114,7 +114,7 @@ def see_data():
             row.append(data)
         content.append(row)
 
-    return render_template('see-data.html', headers = headers, rows = content)
+    return render_template('see-data.html', headers=headers, rows=content)
     
     
 @login_required

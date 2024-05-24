@@ -63,6 +63,23 @@ class Record(db.Model):
     text_data = relationship('TextDatum', backref='record')
     timestamp_data = relationship('TimestampDatum', backref='record')
 
+    @staticmethod
+    def get_datum(record, field):
+        data_type_to_class = {
+            'VARCHAR(255)': ShortTextDatum,
+            'INT': IntDatum,
+            'DECIMAL': NumericDatum,
+            'BOOLEAN': BooleanDatum,
+            'DATE': DateDatum,
+            'TEXT': TextDatum,
+            'TIMESTAMP': TimestampDatum,
+            'EMAIL': EmailDatum
+        }
+        datum_class = data_type_to_class.get(field.data_type)
+        if datum_class:
+            return db.session.query(datum_class).filter_by(record_id=record.record_id, field_id=field.field_id).first()
+        return None
+
  
 class ShortTextDatum(db.Model):
     __tablename__ = 'ShortText_Data'
@@ -84,9 +101,8 @@ class IntDatum(db.Model):
     record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
 
 
-#TODO: Rename to NumericDatum
-class DecimalDatum(db.Model):
-    __tablename__ = 'Decimal_Data'
+class NumericDatum(db.Model):
+    __tablename__ = 'Numeric_Data'
 
     data_id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.Numeric, nullable=False)

@@ -8,7 +8,7 @@ from .models import *
 
 def get_sql_type(field_type):
     dictionary = {"VARCHAR(255)": ShortTextDatum, "INT": IntDatum,
-            "DECIMAL": DecimalDatum, "BOOLEAN": BooleanDatum,
+            "DECIMAL": NumericDatum, "BOOLEAN": BooleanDatum,
             "DATE": DateDatum, "TEXT": TextDatum, "TIMESTAMP": TimestampDatum,
                   "EMAIL": EmailDatum, "CURRENCY": CurrencyDatum}
 
@@ -42,10 +42,10 @@ def insert_datum(datum, record_id, field):
         return IntDatum(data=datum, record_id=record_id, field_id=field.field_id)
     elif field.data_type == 'DECIMAL':
         datum = datum.replace('.', '').replace(',', '')
-        return DecimalDatum(data=datum, record_id=record_id, field_id=field.field_id)
+        return NumericDatum(data=datum, record_id=record_id, field_id=field.field_id)
     elif field.data_type == 'CURRENCY':
         datum = datum.replace('.', '').replace(',', '').replace('$', '')
-        return DecimalDatum(data=datum, record_id=record_id, field_id=field.field_id)
+        return NumericDatum(data=datum, record_id=record_id, field_id=field.field_id)
     elif field.data_type == 'BOOLEAN':
         return BooleanDatum(data=datum, record_id=record_id, field_id=field.field_id)
     elif field.data_type == 'DATE':
