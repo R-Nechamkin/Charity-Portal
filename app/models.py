@@ -86,7 +86,7 @@ class IntDatum(db.Model):
 
 #TODO: Rename to NumericDatum
 class DecimalDatum(db.Model):
-    __tablename__ = 'Numeric_Data'
+    __tablename__ = 'Decimal_Data'
 
     data_id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.Numeric, nullable=False)

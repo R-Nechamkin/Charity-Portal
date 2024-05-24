@@ -7,10 +7,10 @@ from .models import *
 
 
 def get_sql_type(field_type):
-    dictionary = {"SHORT_TEXT": db.session.ShortTextDatum, "INT": db.session.IntegerDatum,
-            "DECIMAL": db.session.DecimalDatum, "BOOLEAN": db.session.BooleanDatum,
-            "DATE": db.session.DateDatum, "TEXT": db.session.TextDatum, "TIMESTAMP": db.TimestampDatum,
-                  "EMAIL": db.EmailDatum, "CURRENCY": db.CurrencyDatum}
+    dictionary = {"VARCHAR(255)": ShortTextDatum, "INT": IntDatum,
+            "DECIMAL": DecimalDatum, "BOOLEAN": BooleanDatum,
+            "DATE": DateDatum, "TEXT": TextDatum, "TIMESTAMP": TimestampDatum,
+                  "EMAIL": EmailDatum, "CURRENCY": CurrencyDatum}
 
     return dictionary[field_type.upper()]
 
@@ -59,8 +59,8 @@ def insert_datum(datum, record_id, field):
 
 
 def get_data_for_field_and_record(record, field):
-    table: db.Model = get_sql_type(field.field_type)
-    return table.query.filter(field_id=field.field_id, record_id= record.record_id).one()
+    table: db.Model = get_sql_type(field.data_type)
+    return table.query.filter_by(field_id=field.field_id, record_id= record.record_id).first()
 
 def internal_insert_user_data(charity, data, headers, records):
     for i in range(len(headers)):
