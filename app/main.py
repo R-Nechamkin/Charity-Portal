@@ -95,6 +95,15 @@ def insert_data():
 @main.route('/insert-data/manual')
 def manual_insert():
     return render_template('manual-insert.html')
+
+
+@login_required
+@main.route('/see-data/')
+def see_data():
+    headers = []
+    for field_name in current_user.charity.fields:
+        headers.append(field_name)
+    return render_template('see-data.html', headers = headers)
     
     
 @login_required
@@ -113,6 +122,7 @@ def upload_data():
         charity = current_user.charity_id
         headers = Field.query.filter_by(charity_id=charity).all()
         insert_user_data(charity=current_user.charity, data=data.values, headers=headers)
+        return redirect(url_for('main.see_data'))
         
     return render_template('upload-data.html')
 
@@ -146,6 +156,8 @@ def import_data():
         except Exception as e:
             flash('Something went wrong while importing your data. Check your data and try again.')
             print(traceback.format_exc())
+
+        return redirect(url_for('main.see_data'))
 
     return render_template('import-data.html')
 

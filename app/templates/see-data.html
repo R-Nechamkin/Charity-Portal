@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">  Welcome, {{current_user.username}}!</h1>
+
+    <table>
+        <thead>
+            {% for cell in headers %}
+                <th>{{cell}}</th>
+            {% endfor % }
+        </thead>
+        <tbody>
+        {% for row in rows %}
+            <tr>
+                {% for data in rows %}
+                <td>{{data}}</td>
+                {% endfor %}
+            </tr>
+		{% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
