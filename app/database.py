@@ -7,10 +7,10 @@ from .models import *
 
 
 def get_sql_type(field_type):
-    dictionary = {"SHORT_TEXT": db.String(255), "INT": db.Integer,
-            "DECIMAL": db.Number, "BOOLEAN": db.Boolean,
-            "DATE": db.Date, "TEXT": db.Text, "TIMESTAMP": db.DateTime,
-                  "EMAIL": db.Email, "CURRENCY": db.Number}
+    dictionary = {"SHORT_TEXT": db.session.ShortTextDatum, "INT": db.session.IntegerDatum,
+            "DECIMAL": db.session.DecimalDatum, "BOOLEAN": db.session.BooleanDatum,
+            "DATE": db.session.DateDatum, "TEXT": db.session.TextDatum, "TIMESTAMP": db.TimestampDatum,
+                  "EMAIL": db.EmailDatum, "CURRENCY": db.CurrencyDatum}
 
     return dictionary[field_type.upper()]
 
@@ -57,6 +57,10 @@ def insert_datum(datum, record_id, field):
     else:
         raise Exception('Field type has no corresponding table')
 
+
+def get_data_for_field_and_record(record, field):
+    table: db.Model = get_sql_type(field.field_type)
+    return table.query.filter(field_id=field.field_id, record_id= record.record_id).one()
 
 def internal_insert_user_data(charity, data, headers, records):
     for i in range(len(headers)):

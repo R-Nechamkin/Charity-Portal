@@ -101,9 +101,20 @@ def manual_insert():
 @main.route('/see-data/')
 def see_data():
     headers = []
-    for field_name in current_user.charity.fields:
-        headers.append(field_name)
-    return render_template('see-data.html', headers = headers)
+    content = []
+
+    cols = current_user.charity.fields
+    for field in cols:
+        headers.append(field.name)
+
+    for record in current_user.charity.records:
+        row = []
+        for field in cols:
+            data = get_data_for_field_and_record(record, field)
+            row.append(data)
+        content.append(row)
+
+    return render_template('see-data.html', headers = headers, rows = content)
     
     
 @login_required
