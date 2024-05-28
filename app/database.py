@@ -7,7 +7,7 @@ from .models import *
 
 
 def get_sql_type(field_type):
-    dictionary = {"VARCHAR(255)": ShortTextDatum, "INT": IntDatum,
+    dictionary = {"SHORT_TEXT": ShortTextDatum, "INT": IntDatum,
             "DECIMAL": NumericDatum, "BOOLEAN": BooleanDatum,
             "DATE": DateDatum, "TEXT": TextDatum, "TIMESTAMP": TimestampDatum,
                   "EMAIL": EmailDatum, "CURRENCY": CurrencyDatum}
@@ -34,7 +34,7 @@ def create_table(field_details, user):
 
 
 def insert_datum(datum, record_id, field):
-    if field.data_type == 'VARCHAR(255)':
+    if field.data_type == 'SHORT_TEXT':
         return ShortTextDatum(data=datum, record_id=record_id, field_id=field.field_id)
     elif field.data_type == 'TEXT':
         return TextDatum(data=datum, record_id=record_id, field_id=field.field_id)
@@ -58,9 +58,39 @@ def insert_datum(datum, record_id, field):
         raise Exception('Field type has no corresponding table')
 
 
-def get_data_for_field_and_record(record, field):
-    table: db.Model = get_sql_type(field.data_type)
-    return table.query.filter_by(field_id=field.field_id, record_id= record.record_id).first()
+
+# def get_datum(record, field):
+    # data_type_to_class = {
+        # 'VARCHAR(255)': ShortTextDatum,
+        # 'INT': IntDatum,
+        # 'DECIMAL': NumericDatum,
+        # 'BOOLEAN': BooleanDatum,
+        # 'DATE': DateDatum,
+        # 'TEXT': TextDatum,
+        # 'TIMESTAMP': TimestampDatum,
+        # 'EMAIL': EmailDatum,
+        # 'CURRENCY': NumericDatum
+    # }
+    # DatumClass = data_type_to_class.get(field.data_type)
+    # if DatumClass:
+        # return db.session.query(DatumClass).filter_by(record_id=record.record_id, field_id=field.field_id).first()
+    # return None
+
+
+def get_datum(record, field):
+    row = (ShortTextDatum.query.filter_by(field_id=field.field_id).filter_by(record_id=record.record_id)
+            .union(IntDatum.query.filter_by(field_id=field.field_id).filter_by(record_id=record.record_id))
+            .union(NumericDatum.query.filter_by(field_id =field.field_id).filter_by(record_id=record.record_id))
+            .union(DateDatum.query.filter_by(field_id=field.field_id).filter_by(record_id=record.record_id))
+            .union(BooleanDatum.query.filter_by(field_id=field.field_id).filter_by(record_id=record.record_id))
+            .union(EmailDatum.query.filter_by(field_id=field.field_id).filter_by(record_id=record.record_id))
+            .union(TimestampDatum.query.filter_by(field_id=field.field_id).filter_by(record_id=record.record_id))
+            .union(TextDatum.query.filter_by(field_id=field.field_id).filter_by(record_id=record.record_id))
+            .first())
+
+
+    return row.data
+
 
 def internal_insert_user_data(charity, data, headers, records):
     for i in range(len(headers)):
@@ -68,12 +98,13 @@ def internal_insert_user_data(charity, data, headers, records):
         # field=Field.query.filter_by(name=header).one()
         field = headers[i]
         for j in range(len(records)):
-            datum = insert_datum(datum=data[j][i], record_id=j, field=field)
+            print(records[j])
+            datum = insert_datum(datum=data[j][i], record_id=records[j].record_id, field=field)
             # try:
             
             # except Exception as e:
                 # raise Exception('Database error occured while inserting data') from e
-        db.session.add(datum)
+            db.session.add(datum)
 
 
 def insert_user_data(charity, data, headers):
@@ -83,7 +114,9 @@ def insert_user_data(charity, data, headers):
         record = Record(charity=charity)
         db.session.add(record)
         records.append(record)
-
+    
+    db.session.commit()
+    #TODO: Delete records if data is not inserted
     internal_insert_user_data(charity=charity, data=data, headers=headers, records=records)
 
     db.session.commit()

@@ -63,6 +63,10 @@ def fields():
     if request.method == 'POST':
         num_fields = int(request.form.get('num_fields'))
         return redirect('/field_details/' + str(num_fields))
+        
+    
+    if not current_user.charity.fields:
+        flash('Data storage not set up for this organization. Let\'s configure your storage before inserting data.')
     return render_template('fields.html')
 
 
@@ -78,6 +82,7 @@ def field_details(num_fields):
             field_details.append((field_name, field_type, field_num))
         create_table(field_details, user=current_user)
         return redirect(url_for('main.index'))
+        
     return render_template('field_details.html', num_fields=int(num_fields))
 
 
@@ -107,10 +112,11 @@ def see_data():
     for field in cols:
         headers.append(field.name)
 
-    for record in current_user.charity.records:
+    records = Record.query.filter_by(charity_id=current_user.charity.charity_id).order_by(Record.record_id)
+    for record in records:
         row = []
         for field in cols:
-            data = get_data_for_field_and_record(record, field)
+            data = get_datum(record =record, field=field)
             row.append(data)
         content.append(row)
 
@@ -126,7 +132,7 @@ def upload_data():
         file_ext = os.path.splitext(filename)[1]
         if not file_ext == '.csv':
             flash('This file is not a CSV file')
-            return redirect(url_for('upload_data'))
+            return redirect(url_for('main.upload_data'))
            
             
         data = pandas.read_csv(file)

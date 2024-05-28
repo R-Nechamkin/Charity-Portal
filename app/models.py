@@ -57,28 +57,13 @@ class Record(db.Model):
 
     shortText_data = relationship('ShortTextDatum', backref='record')
     int_data = relationship('IntDatum', backref='record')
-    decimal_data = relationship('DecimalDatum', backref='record')
+    numeric_data = relationship('NumericDatum', backref='record')
     boolean_data = relationship('BooleanDatum', backref='record')
     date_data = relationship('DateDatum', backref='record')
     text_data = relationship('TextDatum', backref='record')
     timestamp_data = relationship('TimestampDatum', backref='record')
-
-    @staticmethod
-    def get_datum(record, field):
-        data_type_to_class = {
-            'VARCHAR(255)': ShortTextDatum,
-            'INT': IntDatum,
-            'DECIMAL': NumericDatum,
-            'BOOLEAN': BooleanDatum,
-            'DATE': DateDatum,
-            'TEXT': TextDatum,
-            'TIMESTAMP': TimestampDatum,
-            'EMAIL': EmailDatum
-        }
-        datum_class = data_type_to_class.get(field.data_type)
-        if datum_class:
-            return db.session.query(datum_class).filter_by(record_id=record.record_id, field_id=field.field_id).first()
-        return None
+    email_data = relationship('EmailDatum', backref ='record')
+    
 
  
 class ShortTextDatum(db.Model):
