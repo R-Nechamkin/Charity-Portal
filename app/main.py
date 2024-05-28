@@ -109,17 +109,19 @@ def see_data():
     content = []
 
     cols = current_user.charity.fields
+    headers.append('Record')
     for field in cols:
         headers.append(field.name)
 
     records = Record.query.filter_by(charity_id=current_user.charity.charity_id).order_by(Record.record_id)
     for record in records:
         row = []
+        row.append(record.record_id)
         for field in cols:
             data = get_datum(record =record, field=field)
             row.append(data)
         content.append(row)
-
+    print (content)
     return render_template('see-data.html', headers=headers, rows=content)
     
     

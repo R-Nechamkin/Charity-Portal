@@ -13,10 +13,10 @@
 			{% endfor %}
 		</thead>
 		<tbody>
-		{% for row in rows %}
+		{% for record in rows %}
 			<tr>
-				{% for data in rows %}
-				<td>{{data}}</td>
+				{% for data in record %}
+					<td>{{data}}</td>
 				{% endfor %}
 			</tr>
 		{% endfor %}

@@ -78,17 +78,20 @@ def insert_datum(datum, record_id, field):
 
 
 def get_datum(record, field):
-    row = (ShortTextDatum.query.filter_by(field_id=field.field_id).filter_by(record_id=record.record_id)
-            .union(IntDatum.query.filter_by(field_id=field.field_id).filter_by(record_id=record.record_id))
-            .union(NumericDatum.query.filter_by(field_id =field.field_id).filter_by(record_id=record.record_id))
-            .union(DateDatum.query.filter_by(field_id=field.field_id).filter_by(record_id=record.record_id))
-            .union(BooleanDatum.query.filter_by(field_id=field.field_id).filter_by(record_id=record.record_id))
-            .union(EmailDatum.query.filter_by(field_id=field.field_id).filter_by(record_id=record.record_id))
-            .union(TimestampDatum.query.filter_by(field_id=field.field_id).filter_by(record_id=record.record_id))
-            .union(TextDatum.query.filter_by(field_id=field.field_id).filter_by(record_id=record.record_id))
-            .first())
+    r = record.record_id
+    f = field.field_id
+    row = (db.session.query(ShortTextDatum).filter_by(record_id = r, field_id = f)
+            .union(db.session.query(IntDatum).filter_by(record_id = r, field_id = f))
+            .union(db.session.query(NumericDatum).filter_by(record_id = r, field_id = f))
+            .union(db.session.query(DateDatum).filter_by(record_id = r, field_id = f))
+            .union(db.session.query(BooleanDatum).filter_by(record_id = r, field_id = f))
+            .union(db.session.query(EmailDatum).filter_by(record_id = r, field_id = f))
+            .union(db.session.query(TimestampDatum).filter_by(record_id = r, field_id = f))
+            .union(db.session.query(TextDatum).filter_by(record_id = r, field_id = f))
+            ).first()
 
-
+    if row is None:
+        return "___"
     return row.data
 
 
