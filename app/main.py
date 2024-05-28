@@ -50,6 +50,13 @@ def index():
 
     return render_template('index.html', message='No spreadsheet registered for this user')
 
+@login_required
+@main.route('/email')
+def email():
+    field_names = get_field_names(current_user.charity)
+    return render_template('email.html', fields = field_names)
+
+
 
 @login_required
 @main.route('/profile')

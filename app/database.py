@@ -125,6 +125,14 @@ def insert_user_data(charity, data, headers):
         raise Exception('Database error occured while inserting data') from e
 
 
+def get_field_names(charity):
+    field_names = []
+    fields = Charity.query.filter_by(charity=charity).all()
+    for f in fields:
+        field_names.append(f.field_name)
+    return field_names
+
+
 from sqlalchemy import create_engine, DDL
 
 
