@@ -1,65 +1,142 @@
-import sqlite3
-
-from app import create_app, db
-
-
-def set_up_database():
-    connection = sqlite3.connect('testdb.sqlite')
-    with open('db.sql') as f:
-        connection.executescript(f.read())
+from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, text, CheckConstraint
+from sqlalchemy.dialects.mssql.information_schema import columns
+from sqlalchemy.sql import text
+from .secrets import DB_CONNECTOR
+from . import db
+from .models import *
 
 
-def get_db_connection():
-    conn = sqlite3.connect('testdb.sqlite')
-    conn.row_factory = sqlite3.Row
-    return conn
+def get_sql_type(field_type):
+    dictionary = {"SHORT_TEXT": ShortTextDatum, "INT": IntDatum,
+            "DECIMAL": NumericDatum, "BOOLEAN": BooleanDatum,
+            "DATE": DateDatum, "TEXT": TextDatum, "TIMESTAMP": TimestampDatum,
+                  "EMAIL": EmailDatum, "CURRENCY": CurrencyDatum}
+
+    return dictionary[field_type.upper()]
 
 
-def get_stuff_from_db():
-    conn = get_db_connection()
-    return conn.execute('SELECT * FROM Users').fetchall()
+def insert_fields_into_table(field_details, charity_id):
+    for field_name, field_type, field_num in field_details:
+        new_field = Field(name=field_name, data_type=field_type, order=field_num, charity_id=charity_id)
+        db.session.add(new_field)
 
 
-def get_url_by_user_id(user_id):
-    conn = get_db_connection()
-    query = """
-        SELECT url FROM Spreadsheets
-        JOIN Users ON Spreadsheets.sheet_id = Users.sheet_id
-        WHERE user_id = (?)"""
-
-    result = conn.execute(query, (user_id, )).fetchone()
-    return result[0]
-
-
-def get_latest_pk_of_spreadsheet():
-    conn = get_db_connection()
-    query = 'SELECT MAX(sheet_id) AS sheet_id from Spreadsheets'
-    return conn.execute(query).fetchone()['sheet_id']
+def get_last_id(table_name):
+    engine = create_engine(DB_CONNECTOR)
+    query = 'select LAST_INSERT_ID() from ' + table_name
+    return engine.execute(query).fetchone()
 
 
 
-
-def get_all_data_from_table(table_name):
-    conn = get_db_connection()
-    query = 'SELECT * FROM {}'.format(table_name)
-    return conn.execute(query).fetchall()
-
-def add_a_user_to_db():
-    conn = get_db_connection()
-    query = """INSERT INTO Users (username, password, email) VALUES ('User 1', 'password1', 'email1@example.com')"""
-    conn.execute(query)
-    conn.commit()
-    conn.close()
+def create_table(field_details, user):
+    insert_fields_into_table(field_details, user.charity_id)
+    db.session.commit()
 
 
-def get_some_data():
-    conn = get_db_connection()
-    user_id = 1;
+def insert_datum(datum, record_id, field):
+    if record_id == 4:
+        raise Exception('Let\'s put an exception')
+    if field.data_type == 'SHORT_TEXT':
+        return ShortTextDatum(data=datum, record_id=record_id, field_id=field.field_id)
+    elif field.data_type == 'TEXT':
+        return TextDatum(data=datum, record_id=record_id, field_id=field.field_id)
+    elif field.data_type == 'INT':
+        return IntDatum(data=datum, record_id=record_id, field_id=field.field_id)
+    elif field.data_type == 'DECIMAL':
+        datum = datum.replace('.', '').replace(',', '')
+        return NumericDatum(data=datum, record_id=record_id, field_id=field.field_id)
+    elif field.data_type == 'CURRENCY':
+        datum = datum.replace('.', '').replace(',', '').replace('$', '')
+        return NumericDatum(data=datum, record_id=record_id, field_id=field.field_id)
+    elif field.data_type == 'BOOLEAN':
+        return BooleanDatum(data=datum, record_id=record_id, field_id=field.field_id)
+    elif field.data_type == 'DATE':
+        return DateDatum(data=datum, record_id=record_id, field_id=field.field_id)
+    elif field.data_type == 'TIMESTAMP':
+        return TimestampDatum(data=datum, record_id=record_id, field_id=field.field_id)
+    elif field.data_type == 'EMAIL':
+        return EmailDatum(data=datum, record_id=record_id, field_id=field.field_id)
+    else:
+        raise Exception('Field type has no corresponding table')
 
-    query = """
-     SELECT url FROM User
-             JOIN Spreadsheet ON Spreadsheet.sheet_id = User.sheet_id
-             Where User.user_id = (?)"""
 
-    result = conn.execute(query, (user_id,))
-    return result
+
+def get_datum(record, field):
+    r = record.record_id
+    f = field.field_id
+    row = (db.session.query(ShortTextDatum).filter_by(record_id = r, field_id = f)
+            .union(db.session.query(IntDatum).filter_by(record_id = r, field_id = f))
+            .union(db.session.query(NumericDatum).filter_by(record_id = r, field_id = f))
+            .union(db.session.query(DateDatum).filter_by(record_id = r, field_id = f))
+            .union(db.session.query(BooleanDatum).filter_by(record_id = r, field_id = f))
+            .union(db.session.query(EmailDatum).filter_by(record_id = r, field_id = f))
+            .union(db.session.query(TimestampDatum).filter_by(record_id = r, field_id = f))
+            .union(db.session.query(TextDatum).filter_by(record_id = r, field_id = f))
+            ).first()
+
+    if row is None:
+        return "___"
+    return row.data
+
+
+def internal_insert_user_data(charity, data, headers, records):
+    for i in range(len(headers)):
+        field = headers[i]
+        for j in range(len(records)):
+            try:
+                datum = insert_datum(datum=data[j][i], record_id=records[j].record_id, field=field)
+            except Exception as e:
+                raise Exception('Database error occured while inserting data') from e
+            db.session.add(datum)
+
+
+def delete_record(record_id):
+    ShortTextDatum.query.filter_by(record_id = record_id).delete()
+    IntDatum.query.filter_by(record_id = record_id).delete()
+    NumericDatum.query.filter_by(record_id = record_id).delete()
+    DateDatum.query.filter_by(record_id = record_id).delete()
+    BooleanDatum.query.filter_by(record_id = record_id).delete()
+    EmailDatum.query.filter_by(record_id = record_id).delete()
+    TimestampDatum.query.filter_by(record_id = record_id).delete()
+    TextDatum.query.filter_by(record_id = record_id).delete()
+    
+    db.session.commit()
+
+    Record.query.filter_by(record_id = record_id).delete()
+    db.session.commit()
+
+
+def insert_user_data(charity, data, headers):
+    records = []
+    try:
+        for _ in data:
+            record = Record(charity=charity)
+            db.session.add(record)
+            records.append(record)
+        
+        db.session.commit()
+        
+        internal_insert_user_data(charity=charity, data=data, headers=headers, records=records)
+
+        db.session.commit()
+    except Exception as e:
+        for r in records:
+            delete_record(r.record_id)
+        raise Exception('Database error occured while inserting data') from e
+
+
+from sqlalchemy import create_engine, DDL
+
+
+# TODO remember to call this before publishing the website
+def create_email_format_function():
+    engine = create_engine(DB_CONNECTOR)
+    email_format_function = DDL("""
+        CREATE FUNCTION email_format(email VARCHAR(255)) RETURNS BOOLEAN
+        BEGIN
+            DECLARE pattern VARCHAR(255);
+            SET pattern = '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
+            RETURN email REGEXP pattern;
+        END
+    """)
+    engine.execute(email_format_function)

@@ -4,6 +4,7 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 
 from .config import Config
+from .secrets import API_KEY
 
 
 # init SQLAlchemy so we can use it later in our models
@@ -17,15 +18,12 @@ login = LoginManager(app)
 
 #variables
 
-api_key = "AIzaSyDm3NkpUP7s2-9eIctdLS2OZzcYKWnVvXc"
-api_url = "https://sheets.googleapis.com/v4/spreadsheets/{}?key=" + api_key
+#api_url = "https://sheets.googleapis.com/v4/spreadsheets/{}?key=" + API_KEY
 
 
 
 def create_app():
-
     login.login_view = 'auth.login'
-    
 
     from .models import User
 
