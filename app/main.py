@@ -121,7 +121,6 @@ def see_data():
             data = get_datum(record =record, field=field)
             row.append(data)
         content.append(row)
-    print (content)
     return render_template('see-data.html', headers=headers, rows=content)
     
     
@@ -140,7 +139,15 @@ def upload_data():
         data = pandas.read_csv(file)
         charity = current_user.charity_id
         headers = Field.query.filter_by(charity_id=charity).all()
-        insert_user_data(charity=current_user.charity, data=data.values, headers=headers)
+        
+        try:
+            insert_user_data(charity=current_user.charity, data=data.values, headers=headers)
+        #TODO: Really I should only catch database exceptions
+        except Exception as e:
+            flash('Something went wrong while importing your data. Check your data and try again.')
+            print('Error occurred while importing data', traceback.format_exc(), sep='\n')
+            return redirect(url_for('main.upload_data'))
+
         return redirect(url_for('main.see_data'))
         
     return render_template('upload-data.html')
@@ -158,7 +165,7 @@ def import_data():
             flash('Something went wrong while trying to access your spreadsheet. Check your internet connection,' +
                 'make sure your sheet is actually shared, and that you pasted the right thing, and try again.')
             print(traceback.format_exc())
-            return redirect(url_for('import_data'))
+            return redirect(url_for('main.import_data'))
 
         if form['has_headers']:
             headers = []

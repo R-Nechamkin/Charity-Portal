@@ -34,6 +34,8 @@ def create_table(field_details, user):
 
 
 def insert_datum(datum, record_id, field):
+    if record_id == 4:
+        raise Exception('Let\'s put an exception')
     if field.data_type == 'SHORT_TEXT':
         return ShortTextDatum(data=datum, record_id=record_id, field_id=field.field_id)
     elif field.data_type == 'TEXT':
@@ -59,24 +61,6 @@ def insert_datum(datum, record_id, field):
 
 
 
-# def get_datum(record, field):
-    # data_type_to_class = {
-        # 'VARCHAR(255)': ShortTextDatum,
-        # 'INT': IntDatum,
-        # 'DECIMAL': NumericDatum,
-        # 'BOOLEAN': BooleanDatum,
-        # 'DATE': DateDatum,
-        # 'TEXT': TextDatum,
-        # 'TIMESTAMP': TimestampDatum,
-        # 'EMAIL': EmailDatum,
-        # 'CURRENCY': NumericDatum
-    # }
-    # DatumClass = data_type_to_class.get(field.data_type)
-    # if DatumClass:
-        # return db.session.query(DatumClass).filter_by(record_id=record.record_id, field_id=field.field_id).first()
-    # return None
-
-
 def get_datum(record, field):
     r = record.record_id
     f = field.field_id
@@ -97,34 +81,48 @@ def get_datum(record, field):
 
 def internal_insert_user_data(charity, data, headers, records):
     for i in range(len(headers)):
-        print('header:', headers[i])
-        # field=Field.query.filter_by(name=header).one()
         field = headers[i]
         for j in range(len(records)):
-            print(records[j])
-            datum = insert_datum(datum=data[j][i], record_id=records[j].record_id, field=field)
-            # try:
-            
-            # except Exception as e:
-                # raise Exception('Database error occured while inserting data') from e
+            try:
+                datum = insert_datum(datum=data[j][i], record_id=records[j].record_id, field=field)
+            except Exception as e:
+                raise Exception('Database error occured while inserting data') from e
             db.session.add(datum)
 
 
-def insert_user_data(charity, data, headers):
-    # try:
-    records = []
-    for _ in data:
-        record = Record(charity=charity)
-        db.session.add(record)
-        records.append(record)
+def delete_record(record_id):
+    ShortTextDatum.query.filter_by(record_id = record_id).delete()
+    IntDatum.query.filter_by(record_id = record_id).delete()
+    NumericDatum.query.filter_by(record_id = record_id).delete()
+    DateDatum.query.filter_by(record_id = record_id).delete()
+    BooleanDatum.query.filter_by(record_id = record_id).delete()
+    EmailDatum.query.filter_by(record_id = record_id).delete()
+    TimestampDatum.query.filter_by(record_id = record_id).delete()
+    TextDatum.query.filter_by(record_id = record_id).delete()
     
     db.session.commit()
-    #TODO: Delete records if data is not inserted
-    internal_insert_user_data(charity=charity, data=data, headers=headers, records=records)
 
+    Record.query.filter_by(record_id = record_id).delete()
     db.session.commit()
-    # except Exception as e:
-        # raise Exception('Database error occured while inserting data') from e
+
+
+def insert_user_data(charity, data, headers):
+    records = []
+    try:
+        for _ in data:
+            record = Record(charity=charity)
+            db.session.add(record)
+            records.append(record)
+        
+        db.session.commit()
+        
+        internal_insert_user_data(charity=charity, data=data, headers=headers, records=records)
+
+        db.session.commit()
+    except Exception as e:
+        for r in records:
+            delete_record(r.record_id)
+        raise Exception('Database error occured while inserting data') from e
 
 
 from sqlalchemy import create_engine, DDL
