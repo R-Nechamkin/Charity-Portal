@@ -58,7 +58,7 @@ def signup_post():
         flash('Email address already exists')
         return redirect(url_for('auth.signup'))
     
-    pattern = r'^[a-zA-Z0-9]+$'
+    pattern = r'^[a-zA-Z0-9]*$'
     # We use the username in a lot of random places, so for simplicity's sake, let's require it to be simple
     if not bool(re.match(pattern, name)) or ' ' in name:
         flash('Username must be alphanumeric and cannot contain spaces.')

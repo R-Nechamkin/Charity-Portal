@@ -215,6 +215,6 @@ def try_orm():
         return users
 
     result = ''
-    for user in get_users_by_email_domain(''):
+    for user in User.query.all():
         result += user.username + user.email
     return 'hello' + result
