@@ -127,8 +127,7 @@ def insert_user_data(charity, data, headers):
 
 def get_field_names(charity):
     field_names = []
-    fields = Charity.query.filter_by(charity=charity).all()
-    for f in fields:
+    for f in charity.fields:
         field_names.append(f.field_name)
     return field_names
 
