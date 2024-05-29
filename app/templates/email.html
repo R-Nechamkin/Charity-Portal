@@ -5,13 +5,13 @@
     <h3 class="title">Email Form</h3>
     <div class="box">
         <table class="table table-striped table-bordered">
-            {{% for field in fields %}}
+            {% for field in fields %}
             <tbody>
                 <tr><td>{{field}}</td></tr>
             </tbody>
-            {{% endfor %}}
+            {% endfor %}
         </table>
-        <form method="POST" action="/email">
+        <form method="POST" action="">
             <div class="field">
                 <div class="control">
                     <input type="text" name="from" placeholder="From:" required>

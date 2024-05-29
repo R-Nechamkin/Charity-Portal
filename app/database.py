@@ -8,7 +8,7 @@ from .models import *
 
 def get_sql_type(field_type):
     dictionary = {"SHORT_TEXT": ShortTextDatum, "INT": IntDatum,
-            "DECIMAL": NumericDatum, "BOOLEAN": BooleanDatum,
+            "DECIMAL": DecimalDatum, "BOOLEAN": BooleanDatum,
             "DATE": DateDatum, "TEXT": TextDatum, "TIMESTAMP": TimestampDatum,
                   "EMAIL": EmailDatum, "CURRENCY": CurrencyDatum}
 
@@ -34,8 +34,6 @@ def create_table(field_details, user):
 
 
 def insert_datum(datum, record_id, field):
-    if record_id == 4:
-        raise Exception('Let\'s put an exception')
     if field.data_type == 'SHORT_TEXT':
         return ShortTextDatum(data=datum, record_id=record_id, field_id=field.field_id)
     elif field.data_type == 'TEXT':
@@ -44,10 +42,10 @@ def insert_datum(datum, record_id, field):
         return IntDatum(data=datum, record_id=record_id, field_id=field.field_id)
     elif field.data_type == 'DECIMAL':
         datum = datum.replace('.', '').replace(',', '')
-        return NumericDatum(data=datum, record_id=record_id, field_id=field.field_id)
+        return DecimalDatum(data=datum, record_id=record_id, field_id=field.field_id)
     elif field.data_type == 'CURRENCY':
         datum = datum.replace('.', '').replace(',', '').replace('$', '')
-        return NumericDatum(data=datum, record_id=record_id, field_id=field.field_id)
+        return DecimalDatum(data=datum, record_id=record_id, field_id=field.field_id)
     elif field.data_type == 'BOOLEAN':
         return BooleanDatum(data=datum, record_id=record_id, field_id=field.field_id)
     elif field.data_type == 'DATE':
@@ -66,7 +64,7 @@ def get_datum(record, field):
     f = field.field_id
     row = (db.session.query(ShortTextDatum).filter_by(record_id = r, field_id = f)
             .union(db.session.query(IntDatum).filter_by(record_id = r, field_id = f))
-            .union(db.session.query(NumericDatum).filter_by(record_id = r, field_id = f))
+            .union(db.session.query(DecimalDatum).filter_by(record_id = r, field_id = f))
             .union(db.session.query(DateDatum).filter_by(record_id = r, field_id = f))
             .union(db.session.query(BooleanDatum).filter_by(record_id = r, field_id = f))
             .union(db.session.query(EmailDatum).filter_by(record_id = r, field_id = f))
@@ -93,7 +91,7 @@ def internal_insert_user_data(charity, data, headers, records):
 def delete_record(record_id):
     ShortTextDatum.query.filter_by(record_id = record_id).delete()
     IntDatum.query.filter_by(record_id = record_id).delete()
-    NumericDatum.query.filter_by(record_id = record_id).delete()
+    DecimalDatum.query.filter_by(record_id = record_id).delete()
     DateDatum.query.filter_by(record_id = record_id).delete()
     BooleanDatum.query.filter_by(record_id = record_id).delete()
     EmailDatum.query.filter_by(record_id = record_id).delete()
@@ -122,14 +120,14 @@ def insert_user_data(charity, data, headers):
     except Exception as e:
         for r in records:
             delete_record(r.record_id)
+        db.session.rollback()
         raise Exception('Database error occured while inserting data') from e
 
 
 def get_field_names(charity):
     field_names = []
-    fields = Charity.query.filter_by(charity=charity).all()
-    for f in fields:
-        field_names.append(f.field_name)
+    for f in charity.fields:
+        field_names.append(f.name)
     return field_names
 
 
