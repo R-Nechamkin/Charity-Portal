@@ -107,10 +107,10 @@ def see_data():
     for field in cols:
         headers.append(field.name)
 
-    records = Record.query.filter_by(charity_id=current_user.charity.charity_id).order_by(Record.record_id)
+    records = Record.query.filter_by(charity_id=current_user.charity._id).order_by(Record._id)
     for record in records:
         row = []
-        row.append(record.record_id)
+        row.append(record._id)
         for field in cols:
             data = get_datum(record=record, field=field)
             row.append(data)
@@ -131,7 +131,7 @@ def upload_data():
             return redirect(url_for('main.upload_data'))
 
         data = pandas.read_csv(file)
-        charity = current_user.charity_id
+        charity = current_user._id
         headers = Field.query.filter_by(charity_id=charity).order_by(Field.order).all()
 
         try:
@@ -168,7 +168,7 @@ def import_data():
                 headers.append(header)
             data = data[1:]
         else:
-            headers = db.session.query(Field.name).filter(Field.charity_id == current_user.charity_id).order_by(
+            headers = db.session.query(Field.name).filter(Field.charity_id == current_user._id).order_by(
                 Field.order).all()
 
         try:

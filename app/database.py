@@ -31,42 +31,42 @@ def get_last_id(table_name):
 
 
 def create_table(field_details, user):
-    insert_fields_into_table(field_details, user.charity_id)
+    insert_fields_into_table(field_details, user._id)
     db.session.commit()
 
 
 def insert_datum(datum, record_id, field):
     if field.data_type == 'SHORT_TEXT':
-        return ShortTextDatum(data=datum, record_id=record_id, field_id=field.field_id)
+        return ShortTextDatum(data=datum, record_id=record_id, field_id=field._id)
     elif field.data_type == 'TEXT':
-        return TextDatum(data=datum, record_id=record_id, field_id=field.field_id)
+        return TextDatum(data=datum, record_id=record_id, field_id=field._id)
     elif field.data_type == 'INT':
-        return IntDatum(data=datum, record_id=record_id, field_id=field.field_id)
+        return IntDatum(data=datum, record_id=record_id, field_id=field._id)
     elif field.data_type == 'DECIMAL':
         if isinstance(datum, str):
             datum = datum.replace('.', '').replace(',', '')
-        return NumericDatum(data=datum, record_id=record_id, field_id=field.field_id)
+        return NumericDatum(data=datum, record_id=record_id, field_id=field._id)
     elif field.data_type == 'CURRENCY':
         if isinstance(datum, str):
             datum = datum.replace('.', '').replace(',', '').replace('$', '')
-        return NumericDatum(data=datum, record_id=record_id, field_id=field.field_id)
+        return NumericDatum(data=datum, record_id=record_id, field_id=field._id)
     elif field.data_type == 'BOOLEAN':
-        return BooleanDatum(data=datum, record_id=record_id, field_id=field.field_id)
+        return BooleanDatum(data=datum, record_id=record_id, field_id=field._id)
     elif field.data_type == 'DATE':
-        return DateDatum(data=datum, record_id=record_id, field_id=field.field_id)
+        return DateDatum(data=datum, record_id=record_id, field_id=field._id)
     elif field.data_type == 'TIMESTAMP':
-        return TimestampDatum(data=datum, record_id=record_id, field_id=field.field_id)
+        return TimestampDatum(data=datum, record_id=record_id, field_id=field._id)
     elif field.data_type == 'EMAIL':
         if not check_email_format(datum):
             raise Exception('Expected text to match email data type, but was instead: ' + datum)
-        return ShortTextDatum(data=datum, record_id=record_id, field_id=field.field_id)
+        return ShortTextDatum(data=datum, record_id=record_id, field_id=field._id)
     else:
         raise Exception('Field type has no corresponding table')
 
 
 def get_datum(record, field):
-    r = record.record_id
-    f = field.field_id
+    r = record._id
+    f = field._id
     row = (db.session.query(ShortTextDatum).filter_by(record_id=r, field_id=f)
            .union(db.session.query(IntDatum).filter_by(record_id=r, field_id=f))
            .union(db.session.query(NumericDatum).filter_by(record_id=r, field_id=f))
@@ -86,7 +86,7 @@ def internal_insert_user_data(data, headers, records):
         field = headers[i]
         for j in range(len(records)):
             try:
-                datum = insert_datum(datum=data[j][i], record_id=records[j].record_id, field=field)
+                datum = insert_datum(datum=data[j][i], record_id=records[j]._id, field=field)
             except Exception as e:
                 raise Exception('Database error occured while inserting data') from e
             db.session.add(datum)
@@ -123,7 +123,7 @@ def insert_user_data(charity, data, headers):
     except Exception as e:
         db.session.rollback()
         for r in records:
-            delete_record_and_commit(r.record_id)
+            delete_record_and_commit(r._id)
         raise Exception('Database error occured while inserting data') from e
 
 

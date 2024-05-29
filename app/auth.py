@@ -72,7 +72,7 @@ def signup_post():
         db.session.commit()
 
     # create new user with the form data. Hash the password so plaintext version isn't saved.
-    new_user = User(email=email, username=name, password=generate_password_hash(password), charity_id = charity.charity_id)
+    new_user = User(email=email, username=name, password=generate_password_hash(password), charity_id = charity._id)
     print('created the user')
 
     # add the new user to the database
