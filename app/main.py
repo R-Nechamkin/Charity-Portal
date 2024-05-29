@@ -151,12 +151,12 @@ def upload_data():
 @main.route('/insert-data/import', methods=['GET', 'POST'])
 def import_data():
     if request.method == 'POST':
-
         try:
             data = get_data_from_api(url=request.form['url'], sheet_index=(int(request.form['sheet_num']) - 1))
         except Exception as e:
             flash('Something went wrong while trying to access your spreadsheet. Check your internet connection,' +
                   'make sure your sheet is actually shared, and that you pasted the right thing, and try again.')
+            print('Error occured while trying to access spreadsheet')
             print(traceback.format_exc())
             return redirect(url_for('main.import_data'))
 
