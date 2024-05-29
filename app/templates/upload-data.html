@@ -1,0 +1,16 @@
+{% extends "flash.html" %}
+
+{% block content %}
+
+		<h1>File Upload</h1>
+		<form method="POST" action="" enctype="multipart/form-data">
+			<div class="field">
+                <div class="control">
+                    <input class="input is-large" type="file" name="file" autofocus="">
+                </div>
+            </div>
+			
+			<button type="submit" name="import_sheets">Submit</button>
+
+		</form>
+{% endblock %}

@@ -23,9 +23,7 @@ login = LoginManager(app)
 
 
 def create_app():
-
     login.login_view = 'auth.login'
-    
 
     from .models import User
 
