@@ -33,6 +33,8 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(255), nullable=False)
     charity_id = db.Column(db.Integer, db.ForeignKey('Charities._id'), nullable=False)
 
+    charity: Mapped["Charity"] = relationship(back_populates="users")
+
     def get_id(self):
         return self._id
 
@@ -47,6 +49,7 @@ class Field(db.Model):
     charity_id = db.Column(db.Integer, db.ForeignKey('Charities._id'), nullable=False)
 
     charity: Mapped["Charity"] = relationship(back_populates="fields")
+
 
 
 class Record(db.Model):
