@@ -19,9 +19,9 @@ class Charity(db.Model):
     _id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
 
-    users = relationship('User', backref='charity')
-    fields = relationship('Field', backref='charity')
-    records = relationship('Record', backref='charity')
+    users = relationship('User', back_populates='charity')
+    fields = relationship('Field', back_populates='charity')
+    records = relationship('Record', back_populates='charity')
 
 
 class User(UserMixin, db.Model):
