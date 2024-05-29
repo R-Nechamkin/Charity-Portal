@@ -148,3 +148,18 @@ class TimestampDatum(db.Model):
 
     record: Mapped["Record"] = relationship(back_populates="timestamp_data")
 
+
+"""Call this once, when you need to create the database"""
+def create_tables():
+    from sqlalchemy import create_engine
+    from .secrets import DB_CONNECTOR
+    from sqlalchemy.orm import sessionmaker, declarative_base
+
+    engine = create_engine(DB_CONNECTOR)
+    Base = declarative_base()
+    Base.metadata.create_all(engine)
+
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    print("Tables created successfully.")
