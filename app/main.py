@@ -154,7 +154,7 @@ def import_data():
 
         try:
             data = get_data_from_api(url=request.form['url'], sheet_index=(int(request.form['sheet_num']) - 1))
-        except:
+        except Exception as e:
             flash('Something went wrong while trying to access your spreadsheet. Check your internet connection,' +
                   'make sure your sheet is actually shared, and that you pasted the right thing, and try again.')
             print(traceback.format_exc())
@@ -171,6 +171,7 @@ def import_data():
                 Field.order).all()
 
         try:
+            print('We got the data, now let\'s insert it into the database')
             insert_user_data(charity=current_user.charity, data=data, headers=headers)
         # TODO: Really I should only catch database exceptions
         except Exception as e:
