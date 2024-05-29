@@ -53,7 +53,7 @@ def email():
             send_email(to=replace_placeholders(to, record=record),
                        body=replace_placeholders(email_body, record=record),
                        subject=replace_placeholders(subject, record=record))
-
+        return redirect(url_for('main.index'))
 
     field_names = get_field_names(current_user.charity)
     return render_template('email.html', fields = field_names)

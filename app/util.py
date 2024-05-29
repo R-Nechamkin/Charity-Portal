@@ -7,7 +7,7 @@ from . import API_KEY
 from .models import *
 from .database import get_datum
 
-placeholder_pattern = re.compile(r'<<(\w+)>>')
+placeholder_pattern = re.compile(r'<<(\w[ \w]*)>>')
 email_pattern = re.compile(
     r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)'
 )
