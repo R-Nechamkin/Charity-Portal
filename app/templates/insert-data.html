@@ -2,6 +2,7 @@
 
 {% block content %}
     <h1>Insert Data</h1>
-    <a href="{{ url_for('manual-insert') }}"><button>Insert Data Manually</button></a>
-    <a href="{{ url_for('import-data') }}"><button>Import Data from Google Sheets</button></a>
+    <a href="{{ manual_insertion_link }}"><button>Insert Data Manually</button></a>
+	<a href="{{ upload_data_link }}"><button>Upload a CSV file</button></a>
+    <a href="{{ import_data_link }}"><button>Import Data from Google Sheets</button></a>
 {%endblock%}
