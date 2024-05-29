@@ -3,6 +3,10 @@ import re
 import requests
 from flask_login import current_user
 
+import os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
 from . import API_KEY
 from .models import *
 from .database import get_datum
@@ -70,7 +74,26 @@ def replace_placeholder_email_address(text: str, record: Record):
     return text
 
 
+
 def send_email(email_from, to, subject, body):
+    print_email(email_from, to, subject, body)
+    message = Mail(
+        from_email='from_email@example.com',
+        to_emails='to@example.com',
+        subject='Sending with Twilio SendGrid is Fun',
+        html_content='<strong>and easy to do anywhere, even with Python</strong>')
+    try:
+        sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+        response = sg.send(message)
+        print(response.status_code)
+        print(response.body)
+        print(response.headers)
+    except Exception as e:
+        print(e.message)
+        raise Exception('Something went wrong while sending the email')
+
+
+def print_email(email_from, to, subject, body):
     print('Sending email:')
     print('From:', email_from)
     print('To:', to)
