@@ -11,7 +11,7 @@ from app import db, create_app, login
 @login.user_loader
 def load_user(_id):
     return db.session.get(User, int(_id))
-    
+
 
 class Charity(db.Model):
     __tablename__ = 'Charities'
@@ -39,13 +39,13 @@ class User(UserMixin, db.Model):
 
 class Field(db.Model):
     __tablename__ = 'Fields'
-    
+
     _id = db.Column(db.Integer, primary_key =True)
     name = db.Column(db.String(100), nullable=False)
     data_type = db.Column(db.String(20), nullable=False)
     order = db.Column(db.Integer, nullable=False)
     charity_id = db.Column(db.Integer, db.ForeignKey('Charities.charity_id'), nullable=False)
-    
+
     charity: Mapped["Charity"] = relationship(back_populates="fields")
 
 
@@ -58,14 +58,14 @@ class Record(db.Model):
     charity: Mapped["Charity"] = relationship(back_populates="records")
 
     shortText_data: Mapped[Set["ShortTextDatum"]] = relationship(back_populates="record")
-    text_data: Mapped[Set["TextDatum"]] = relationship()
-    int_data: Mapped[Set["IntDatum"]] = relationship()
-    numeric_data: Mapped[Set["NumericDatum"]] = relationship()
-    boolean_data: Mapped[Set["BooleanDatum"]] = relationship()
-    date_data: Mapped[Set["DateDatum"]] = relationship()
-    timestamp_data: Mapped[Set["TimestampDatum"]] = relationship()
+    text_data: Mapped[Set["TextDatum"]] = relationship(back_populates="record")
+    int_data: Mapped[Set["IntDatum"]] = relationship(back_populates="record")
+    numeric_data: Mapped[Set["NumericDatum"]] = relationship(back_populates="record")
+    boolean_data: Mapped[Set["BooleanDatum"]] = relationship(back_populates="record")
+    date_data: Mapped[Set["DateDatum"]] = relationship(back_populates="record")
+    timestamp_data: Mapped[Set["TimestampDatum"]] = relationship(back_populates="record")
 
- 
+
 class ShortTextDatum(db.Model):
     __tablename__ = 'ShortText_Data'
 
@@ -94,7 +94,7 @@ class IntDatum(db.Model):
 
     _id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.Integer, nullable=False)
-    
+
     field_id = db.Column(db.Integer, db.ForeignKey('Fields.field_id'), nullable=False)
     record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
 
@@ -106,19 +106,19 @@ class NumericDatum(db.Model):
 
     _id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.Numeric, nullable=False)
-    
+
     field_id = db.Column(db.Integer, db.ForeignKey('Fields.field_id'), nullable=False)
     record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
 
     record: Mapped["Record"] = relationship(back_populates="numeric_data")
-    
+
 
 class BooleanDatum(db.Model):
     __tablename__ = 'Boolean_Data'
 
     _id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.Boolean, nullable=False)
-    
+
     field_id = db.Column(db.Integer, db.ForeignKey('Fields.field_id'), nullable=False)
     record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
 
@@ -130,7 +130,7 @@ class DateDatum(db.Model):
 
     _id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.Date, nullable=False)
-    
+
     field_id = db.Column(db.Integer, db.ForeignKey('Fields.field_id'), nullable=False)
     record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
 
