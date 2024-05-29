@@ -38,12 +38,13 @@ def index():
     return render_template('index.html', message='No spreadsheet registered for this user')
 
 @login_required
-@main.route('/email', methods =['GET', 'POST'])
+@main.route('/email/', methods =['GET', 'POST'])
 def email():
     if request.method == 'POST':
         to = request.form['to']
         if not check_email_address(to):
             flash('To field must be an email address or a field of type Email')
+            print('To field must be an email address or a field of type Email')
             return redirect(url_for('main.email'))
         email_body = request.form['email_body']
         subject = request.form['subject']

@@ -8,8 +8,9 @@ from .models import *
 from .database import get_datum
 
 placeholder_pattern = re.compile(r'<<(\w+)>>')
-email_pattern = re.compile('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
-
+email_pattern = re.compile(
+    r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)'
+)
 
 def data_from_google_sheets(url, sheet_index):
     api_begin = "https://sheets.googleapis.com/v4/spreadsheets/" + url + '/'

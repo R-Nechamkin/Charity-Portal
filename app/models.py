@@ -57,7 +57,7 @@ class Record(db.Model):
 
     shortText_data = relationship('ShortTextDatum', backref='record')
     int_data = relationship('IntDatum', backref='record')
-    numeric_data = relationship('NumericDatum', backref='record')
+    numeric_data = relationship('DecimalDatum', backref='record')
     boolean_data = relationship('BooleanDatum', backref='record')
     date_data = relationship('DateDatum', backref='record')
     text_data = relationship('TextDatum', backref='record')
@@ -86,8 +86,8 @@ class IntDatum(db.Model):
     record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
 
 
-class NumericDatum(db.Model):
-    __tablename__ = 'Numeric_Data'
+class DecimalDatum(db.Model):
+    __tablename__ = 'Decimal_Data'
 
     data_id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.Numeric, nullable=False)
