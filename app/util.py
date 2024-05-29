@@ -39,8 +39,8 @@ def replace_placeholders(text: str, record: Record):
         # Find the field associated with the placeholder
         field = Field.query.filter_by(name=placeholder, charity_id=current_user.charity_id).first()
         if field:
-           datum = get_datum(record=record, field=field)
-           placeholder_values[placeholder] = datum
+            datum = get_datum(record=record, field=field)
+            placeholder_values[placeholder] = datum
 
     # Replace all placeholders in the email text with their corresponding values
     for placeholder, value in placeholder_values.items():
@@ -57,6 +57,7 @@ def check_email_address(text: str) -> bool:
     else:
         return False
 
+
 def replace_placeholder_email_address(text: str, record: Record):
     placeholder = placeholder_pattern.search(text)
     if placeholder:
@@ -67,8 +68,10 @@ def replace_placeholder_email_address(text: str, record: Record):
             raise Exception(f'Field is not an email field: {field.data_type}')
     return text
 
-def send_email(to, subject, body):
+
+def send_email(email_from, to, subject, body):
     print('Sending email:')
+    print('From:', email_from)
     print('To:', to)
     print('Subject:', subject)
     print('Body:', body)
