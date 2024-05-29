@@ -62,8 +62,7 @@ class Record(db.Model):
     date_data = relationship('DateDatum', backref='record')
     text_data = relationship('TextDatum', backref='record')
     timestamp_data = relationship('TimestampDatum', backref='record')
-    email_data = relationship('EmailDatum', backref ='record')
-    
+
 
  
 class ShortTextDatum(db.Model):
@@ -95,16 +94,6 @@ class NumericDatum(db.Model):
     field_id = db.Column(db.Integer, db.ForeignKey('Fields.field_id'), nullable=False)
     record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
     
-    
-class CurrencyDatum(db.Model):
-    __tablename__ = 'Currency_Data'
-
-    data_id = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.Numeric, nullable=False)
-    
-    field_id = db.Column(db.Integer, db.ForeignKey('Fields.field_id'), nullable=False)
-    record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
-
 
 class BooleanDatum(db.Model):
     __tablename__ = 'Boolean_Data'
@@ -145,15 +134,3 @@ class TimestampDatum(db.Model):
     field_id = db.Column(db.Integer, db.ForeignKey('Fields.field_id'), nullable=False)
     record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
 
-
-class EmailDatum(db.Model):
-    __tablename__ = 'Email_Data'
-
-    data_id = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.Text, nullable=False)
-
-    field_id = db.Column(db.Integer, db.ForeignKey('Fields.field_id'), nullable=False)
-    record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
-
-    #TODO: create the constraint for email formatting
-    #constraint = CheckConstraint(sqltext="", name="email_format")

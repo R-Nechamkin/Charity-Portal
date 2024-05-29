@@ -1,4 +1,5 @@
 import numbers
+import re
 
 from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, text, CheckConstraint
 from sqlalchemy.dialects.mssql.information_schema import columns
@@ -12,7 +13,7 @@ def get_sql_type(field_type):
     dictionary = {"SHORT_TEXT": ShortTextDatum, "INT": IntDatum,
                   "DECIMAL": NumericDatum, "BOOLEAN": BooleanDatum,
                   "DATE": DateDatum, "TEXT": TextDatum, "TIMESTAMP": TimestampDatum,
-                  "EMAIL": EmailDatum, "CURRENCY": CurrencyDatum}
+                  "EMAIL": ShortTextDatum, "CURRENCY": NumericDatum}
 
     return dictionary[field_type.upper()]
 
@@ -56,7 +57,9 @@ def insert_datum(datum, record_id, field):
     elif field.data_type == 'TIMESTAMP':
         return TimestampDatum(data=datum, record_id=record_id, field_id=field.field_id)
     elif field.data_type == 'EMAIL':
-        return EmailDatum(data=datum, record_id=record_id, field_id=field.field_id)
+        if not check_email_format(datum):
+            raise Exception('Expected text to match email data type, but was instead: ' + datum)
+        return ShortTextDatum(data=datum, record_id=record_id, field_id=field.field_id)
     else:
         raise Exception('Field type has no corresponding table')
 
@@ -69,7 +72,6 @@ def get_datum(record, field):
            .union(db.session.query(NumericDatum).filter_by(record_id=r, field_id=f))
            .union(db.session.query(DateDatum).filter_by(record_id=r, field_id=f))
            .union(db.session.query(BooleanDatum).filter_by(record_id=r, field_id=f))
-           .union(db.session.query(EmailDatum).filter_by(record_id=r, field_id=f))
            .union(db.session.query(TimestampDatum).filter_by(record_id=r, field_id=f))
            .union(db.session.query(TextDatum).filter_by(record_id=r, field_id=f))
            ).first()
@@ -96,7 +98,6 @@ def delete_record_and_commit(record_id):
     NumericDatum.query.filter_by(record_id=record_id).delete()
     DateDatum.query.filter_by(record_id=record_id).delete()
     BooleanDatum.query.filter_by(record_id=record_id).delete()
-    EmailDatum.query.filter_by(record_id=record_id).delete()
     TimestampDatum.query.filter_by(record_id=record_id).delete()
     TextDatum.query.filter_by(record_id=record_id).delete()
 
@@ -129,15 +130,9 @@ def insert_user_data(charity, data, headers):
 from sqlalchemy import create_engine, DDL
 
 
-# TODO remember to call this before publishing the website
-def create_email_format_function():
-    engine = create_engine(DB_CONNECTOR)
-    email_format_function = DDL("""
-        CREATE FUNCTION email_format(email VARCHAR(255)) RETURNS BOOLEAN
-        BEGIN
-            DECLARE pattern VARCHAR(255);
-            SET pattern = '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
-            RETURN email REGEXP pattern;
-        END
-    """)
-    engine.execute(email_format_function)
+email_pattern = re.compile(
+    r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)'
+)
+
+def check_email_format(text: str) -> bool:
+    return email_pattern.fullmatch(text) is not None
