@@ -13,6 +13,7 @@ import requests
 import json
 import os
 
+from .util import *
 from .database import *
 from .models import *
 from .secrets import API_KEY, DB_CONNECTOR
@@ -20,21 +21,7 @@ from .secrets import API_KEY, DB_CONNECTOR
 main = Blueprint('main', __name__)
 
 
-def get_data_from_api(url, sheet_index):
-    api_begin = "https://sheets.googleapis.com/v4/spreadsheets/" + url + '/'
-    api_end = "?key=" + API_KEY['sheets']
-    sheet_metadata = requests.get(api_begin + api_end).json()
-    sheet_title = sheet_metadata['sheets'][sheet_index]['properties']['title']
-    cell_count = sheet_metadata['sheets'][sheet_index]['properties']['gridProperties']
-    cell_begin = 'R1c1'
-    cell_end = cell_count['rowCount'] + 'C' + cell_count['columnCount']
-    api_url = api_begin + 'values/' + sheet_title + '!' + cell_begin + ':' + cell_end + api_end
-    print('API url:', api_url)
-    raw = requests.get(api_url)
-    print(raw)
-    rows = raw.json()['values']
-    print(rows)
-    return rows
+
 
 
 @main.route('/')
@@ -44,15 +31,29 @@ def index():
     print(current_user)
     print(current_user.charity_id)
     if ():
-        rows = get_data_from_api('18szop7TqllS9pBAyCXZn7LRIvJbPRaw9-MDVcogLh1E')
+        rows = data_from_google_sheets('18szop7TqllS9pBAyCXZn7LRIvJbPRaw9-MDVcogLh1E')
 
         return render_template('Grid.html', rows=rows)
 
     return render_template('index.html', message='No spreadsheet registered for this user')
 
 @login_required
-@main.route('/email')
+@main.route('/email', methods =['GET', 'POST'])
 def email():
+    if request.method == 'POST':
+        to = request.form['to']
+        if not check_email_address(to):
+            flash('To field must be an email address or a field of type Email')
+            return redirect(url_for('main.email'))
+        email_body = request.form['email_body']
+        subject = request.form['subject']
+
+        for record in current_user.charity.records:
+            send_email(to=replace_placeholders(to, record=record),
+                       body=replace_placeholders(email_body, record=record),
+                       subject=replace_placeholders(subject, record=record))
+
+
     field_names = get_field_names(current_user.charity)
     return render_template('email.html', fields = field_names)
 
@@ -167,7 +168,7 @@ def import_data():
         form = request.form.to_dict()
         
         try:
-            data = get_data_from_api(url=form['url'], sheet_index=(int(form['sheet_num']) - 1))
+            data = data_from_google_sheets(url=form['url'], sheet_index=(int(form['sheet_num']) - 1))
         except:
             flash('Something went wrong while trying to access your spreadsheet. Check your internet connection,' +
                 'make sure your sheet is actually shared, and that you pasted the right thing, and try again.')
