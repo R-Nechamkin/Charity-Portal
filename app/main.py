@@ -55,7 +55,7 @@ def profile():
 def fields():
     if request.method == 'POST':
         num_fields = int(request.form.get('num_fields'))
-        return redirect('/field_details/' + str(num_fields))
+        return redirect('set-up/field-details/' + str(num_fields))
 
     if not current_user.charity.fields:
         flash('Data storage not set up for this organization. Let\'s configure your storage before inserting data.')
