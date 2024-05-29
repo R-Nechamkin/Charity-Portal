@@ -26,8 +26,8 @@ def get_data_from_api(url, sheet_index):
     sheet_metadata = requests.get(api_begin + api_end).json()
     sheet_title = sheet_metadata['sheets'][sheet_index]['properties']['title']
     cell_count = sheet_metadata['sheets'][sheet_index]['properties']['gridProperties']
-    cell_begin = 'R1c1'
-    cell_end = cell_count['rowCount'] + 'C' + cell_count['columnCount']
+    cell_begin = 'R1C1'
+    cell_end = 'R' + str(cell_count['rowCount']) + 'C' + str(cell_count['columnCount'])
     api_url = api_begin + 'values/' + sheet_title + '!' + cell_begin + ':' + cell_end + api_end
     print('API url:', api_url)
     raw = requests.get(api_url)
@@ -73,7 +73,7 @@ def field_details(num_fields):
             field_num = i
             field_details.append((field_name, field_type, field_num))
         create_table(field_details, user=current_user)
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.see_data'))
 
     return render_template('field_details.html', num_fields=int(num_fields))
 
