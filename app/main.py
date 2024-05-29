@@ -151,17 +151,16 @@ def upload_data():
 @main.route('/insert-data/import', methods=['GET', 'POST'])
 def import_data():
     if request.method == 'POST':
-        form = request.form.to_dict()
 
         try:
-            data = get_data_from_api(url=form['url'], sheet_index=(int(form['sheet_num']) - 1))
+            data = get_data_from_api(url=request.form['url'], sheet_index=(int(request.form['sheet_num']) - 1))
         except:
             flash('Something went wrong while trying to access your spreadsheet. Check your internet connection,' +
                   'make sure your sheet is actually shared, and that you pasted the right thing, and try again.')
             print(traceback.format_exc())
             return redirect(url_for('main.import_data'))
 
-        if form['has_headers']:
+        if request.form['has_headers']:
             headers = []
             for col_name in data[0]:
                 header = Field.query(Field.name == col_name).one()
