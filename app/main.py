@@ -150,7 +150,9 @@ def upload_data():
 @login_required
 @main.route('/insert-data/import', methods=['GET', 'POST'])
 def import_data():
+
     if request.method == 'POST':
+        has_headers = True if request.form.get('has_headers') else False
         try:
             data = get_data_from_api(url=request.form['url'], sheet_index=(int(request.form['sheet_num']) - 1))
             print('We got the data!')
@@ -161,7 +163,7 @@ def import_data():
             print(traceback.format_exc())
             return redirect(url_for('main.import_data'))
 
-        if request.form['has_headers'] is not None:
+        if has_headers is not None:
             headers = []
             for col_name in data[0]:
                 header = Field.query(Field.name == col_name).one()
