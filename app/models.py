@@ -31,7 +31,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), nullable=False)
-    charity_id = db.Column(db.Integer, db.ForeignKey('Charities.charity_id'), nullable=False)
+    charity_id = db.Column(db.Integer, db.ForeignKey('Charities._id'), nullable=False)
 
     def get_id(self):
         return self._id
@@ -44,7 +44,7 @@ class Field(db.Model):
     name = db.Column(db.String(100), nullable=False)
     data_type = db.Column(db.String(20), nullable=False)
     order = db.Column(db.Integer, nullable=False)
-    charity_id = db.Column(db.Integer, db.ForeignKey('Charities.charity_id'), nullable=False)
+    charity_id = db.Column(db.Integer, db.ForeignKey('Charities._id'), nullable=False)
 
     charity: Mapped["Charity"] = relationship(back_populates="fields")
 
@@ -53,7 +53,7 @@ class Record(db.Model):
     __tablename__ = 'Records'
 
     _id = db.Column(db.Integer, primary_key=True)
-    charity_id = db.Column(db.Integer, db.ForeignKey('Charities.charity_id'), nullable=False)
+    charity_id = db.Column(db.Integer, db.ForeignKey('Charities._id'), nullable=False)
 
     charity: Mapped["Charity"] = relationship(back_populates="records")
 
