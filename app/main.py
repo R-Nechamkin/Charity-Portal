@@ -163,10 +163,10 @@ def import_data():
             print(traceback.format_exc())
             return redirect(url_for('main.import_data'))
 
-        if has_headers is not None:
+        if has_headers:
             headers = []
             for col_name in data[0]:
-                header = Field.query(Field.name == col_name).one()
+                header = Field.query.filter_by(naem=col_name).one()
                 headers.append(header)
             data = data[1:]
         else:
