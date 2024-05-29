@@ -17,7 +17,7 @@ def login():
 
 @auth.route('/login', methods=['POST'])
 def login_post():
-    email = request.form.get('email')
+    email = request.form.get('email').lower()
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
 
@@ -55,7 +55,7 @@ def signup_post():
     user = User.query.filter_by(email=email).first() # if this returns a user, then the email already exists in database
 
     if user: # if a user is found, we want to redirect back to signup page so user can try again  
-        flash('Email address already exists')
+        flash("""Email address already exists.  Go to <a href="{{ url_for('auth.login') }}">login page</a>.""")
         return redirect(url_for('auth.signup'))
     
     pattern = r'^[a-zA-Z0-9]*$'

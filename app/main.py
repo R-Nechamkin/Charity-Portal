@@ -41,14 +41,7 @@ def get_data_from_api(url, sheet_index):
 @main.route('/index')
 @login_required
 def index():
-    print(current_user)
-    print(current_user.charity_id)
-    if ():
-        rows = get_data_from_api('18szop7TqllS9pBAyCXZn7LRIvJbPRaw9-MDVcogLh1E')
-
-        return render_template('Grid.html', rows=rows)
-
-    return render_template('index.html', message='No spreadsheet registered for this user')
+    return render_template('index.html', message='Welcome ' + current_user.username)
 
 
 @login_required
@@ -139,7 +132,7 @@ def upload_data():
 
         data = pandas.read_csv(file)
         charity = current_user.charity_id
-        headers = Field.query.filter_by(charity_id=charity).all()
+        headers = Field.query.filter_by(charity_id=charity).order_by(Field.order).all()
 
         try:
             insert_user_data(charity=current_user.charity, data=data.values, headers=headers)
