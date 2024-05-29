@@ -161,7 +161,7 @@ def import_data():
             print(traceback.format_exc())
             return redirect(url_for('main.import_data'))
 
-        if request.form['has_headers']:
+        if request.form['has_headers'] is not None:
             headers = []
             for col_name in data[0]:
                 header = Field.query(Field.name == col_name).one()
