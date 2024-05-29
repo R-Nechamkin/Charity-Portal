@@ -47,7 +47,7 @@ def signup():
 @auth.route('/signup', methods=['POST'])
 def signup_post():
 
-    email = request.form.get('email')
+    email = request.form.get('email').lower()
     name = request.form.get('name')
     password = request.form.get('password')
     charity_name = request.form.get('charity')
