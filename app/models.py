@@ -72,8 +72,8 @@ class ShortTextDatum(db.Model):
     _id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.String(255), nullable=False)
 
-    field_id = db.Column(db.Integer, db.ForeignKey('Fields.field_id'))
-    record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
+    field_id = db.Column(db.Integer, db.ForeignKey('Fields._id'))
+    record_id = db.Column(db.Integer, db.ForeignKey('Records._id'), nullable=False)
 
     record: Mapped["Record"] = relationship(back_populates="shortText_data")
 
@@ -84,8 +84,8 @@ class TextDatum(db.Model):
     _id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.Text, nullable=False)
 
-    field_id = db.Column(db.Integer, db.ForeignKey('Fields.field_id'), nullable=False)
-    record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
+    field_id = db.Column(db.Integer, db.ForeignKey('Fields._id'), nullable=False)
+    record_id = db.Column(db.Integer, db.ForeignKey('Records._id'), nullable=False)
 
     record: Mapped["Record"] = relationship(back_populates="text_data")
 
@@ -95,8 +95,8 @@ class IntDatum(db.Model):
     _id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.Integer, nullable=False)
 
-    field_id = db.Column(db.Integer, db.ForeignKey('Fields.field_id'), nullable=False)
-    record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
+    field_id = db.Column(db.Integer, db.ForeignKey('Fields._id'), nullable=False)
+    record_id = db.Column(db.Integer, db.ForeignKey('Records._id'), nullable=False)
 
     record: Mapped["Record"] = relationship(back_populates="int_data")
 
@@ -107,8 +107,8 @@ class NumericDatum(db.Model):
     _id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.Numeric, nullable=False)
 
-    field_id = db.Column(db.Integer, db.ForeignKey('Fields.field_id'), nullable=False)
-    record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
+    field_id = db.Column(db.Integer, db.ForeignKey('Fields._id'), nullable=False)
+    record_id = db.Column(db.Integer, db.ForeignKey('Records._id'), nullable=False)
 
     record: Mapped["Record"] = relationship(back_populates="numeric_data")
 
@@ -119,8 +119,8 @@ class BooleanDatum(db.Model):
     _id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.Boolean, nullable=False)
 
-    field_id = db.Column(db.Integer, db.ForeignKey('Fields.field_id'), nullable=False)
-    record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
+    field_id = db.Column(db.Integer, db.ForeignKey('Fields._id'), nullable=False)
+    record_id = db.Column(db.Integer, db.ForeignKey('Records._id'), nullable=False)
 
     record: Mapped["Record"] = relationship(back_populates="boolean_data")
 
@@ -131,8 +131,8 @@ class DateDatum(db.Model):
     _id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.Date, nullable=False)
 
-    field_id = db.Column(db.Integer, db.ForeignKey('Fields.field_id'), nullable=False)
-    record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
+    field_id = db.Column(db.Integer, db.ForeignKey('Fields._id'), nullable=False)
+    record_id = db.Column(db.Integer, db.ForeignKey('Records._id'), nullable=False)
 
     record: Mapped["Record"] = relationship(back_populates="date_data")
 
@@ -143,23 +143,24 @@ class TimestampDatum(db.Model):
     _id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.DateTime, nullable=False)
 
-    field_id = db.Column(db.Integer, db.ForeignKey('Fields.field_id'), nullable=False)
-    record_id = db.Column(db.Integer, db.ForeignKey('Records.record_id'), nullable=False)
+    field_id = db.Column(db.Integer, db.ForeignKey('Fields._id'), nullable=False)
+    record_id = db.Column(db.Integer, db.ForeignKey('Records._id'), nullable=False)
 
     record: Mapped["Record"] = relationship(back_populates="timestamp_data")
 
 
-"""Call this once, when you need to create the database"""
-def create_tables():
-    from sqlalchemy import create_engine
-    from .secrets import DB_CONNECTOR
-    from sqlalchemy.orm import sessionmaker, declarative_base
-
-    engine = create_engine(DB_CONNECTOR)
-    Base = declarative_base()
-    Base.metadata.create_all(engine)
-
-    Session = sessionmaker(bind=engine)
-    session = Session()
-
-    print("Tables created successfully.")
+# """Call this once, when you need to create the database
+# This might not work"""
+# def create_tables():
+#     from sqlalchemy import create_engine
+#     from .secrets import DB_CONNECTOR
+#     from sqlalchemy.orm import sessionmaker, declarative_base
+#
+#     engine = create_engine(DB_CONNECTOR)
+#     Base = declarative_base()
+#     Base.metadata.create_all(engine)
+#
+#     Session = sessionmaker(bind=engine)
+#     session = Session()
+#
+#     print("Tables created successfully.")
