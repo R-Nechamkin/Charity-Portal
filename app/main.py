@@ -166,7 +166,7 @@ def import_data():
         if has_headers:
             headers = []
             for col_name in data[0]:
-                header = Field.query.filter_by(naem=col_name).one()
+                header = Field.query.filter_by(name=col_name).one()
                 headers.append(header)
             data = data[1:]
         else:
