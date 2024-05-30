@@ -51,7 +51,7 @@ def email():
                        body=replace_placeholders(email_body, record=record),
                        subject=replace_placeholders(subject, record=record))
 
-    field_names = get_field_names(current_user.charity)
+    field_names = get_field_names(current_user.charity_id)
     return render_template('email.html', fields=field_names)
 
 
