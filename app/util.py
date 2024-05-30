@@ -22,8 +22,8 @@ def data_from_google_sheets(url, sheet_index):
     sheet_metadata = requests.get(api_begin + api_end).json()
     sheet_title = sheet_metadata['sheets'][sheet_index]['properties']['title']
     cell_count = sheet_metadata['sheets'][sheet_index]['properties']['gridProperties']
-    cell_begin = 'R1c1'
-    cell_end = cell_count['rowCount'] + 'C' + cell_count['columnCount']
+    cell_begin = 'R1C1'
+    cell_end = 'R' + str(cell_count['rowCount']) + 'C' + str(cell_count['columnCount'])
     api_url = api_begin + 'values/' + sheet_title + '!' + cell_begin + ':' + cell_end + api_end
     print('API url:', api_url)
     raw = requests.get(api_url)
@@ -83,7 +83,7 @@ def send_email(email_from, to, subject, body):
         subject='Sending with Twilio SendGrid is Fun',
         html_content='<strong>and easy to do anywhere, even with Python</strong>')
     try:
-        sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+        sg = SendGridAPIClient(API_KEY['email'])
         response = sg.send(message)
         print(response.status_code)
         print(response.body)

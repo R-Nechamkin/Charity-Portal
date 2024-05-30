@@ -9,8 +9,8 @@ from . import db
 from .models import *
 
 
-def get_field_names(charity: Charity) -> list:
-    return db.session.query(Field.name).filter(Field.charity_id == charity._id).all()
+def get_field_names(charity_id: int) -> list:
+    return db.session.query(Field.name).filter(Field.charity_id == charity_id).all()
 
 def get_sql_type(field_type):
     dictionary = {"SHORT_TEXT": ShortTextDatum, "INT": IntDatum,
