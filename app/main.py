@@ -170,8 +170,7 @@ def import_data():
                 headers.append(header)
             data = data[1:]
         else:
-            headers = db.session.query().filter_by(charity_id =current_user.charity_id).order_by(
-                Field.order).all()
+            headers = Field.query.filter_by(charity_id =current_user.charity_id).order_by(Field.order).all()
 
         try:
             print('We got the data, now let\'s insert it into the database')
