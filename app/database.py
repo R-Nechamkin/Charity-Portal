@@ -45,11 +45,11 @@ def insert_datum(datum, record_id, field):
         return IntDatum(data=datum, record_id=record_id, field_id=field._id)
     elif field.data_type == 'DECIMAL':
         if isinstance(datum, str):
-            datum = datum.replace('.', '').replace(',', '')
+            datum = datum.replace(',', '')
         return NumericDatum(data=datum, record_id=record_id, field_id=field._id)
     elif field.data_type == 'CURRENCY':
         if isinstance(datum, str):
-            datum = datum.replace('.', '').replace(',', '').replace('$', '')
+            datum = datum.replace(',', '').replace('$', '')
         return NumericDatum(data=datum, record_id=record_id, field_id=field._id)
     elif field.data_type == 'BOOLEAN':
         return BooleanDatum(data=datum, record_id=record_id, field_id=field._id)
