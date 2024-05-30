@@ -36,6 +36,7 @@ def create_table(field_details, user):
 
 
 def insert_datum(datum, record_id, field):
+    print(field)
     if field.data_type == 'SHORT_TEXT':
         return ShortTextDatum(data=datum, record_id=record_id, field_id=field._id)
     elif field.data_type == 'TEXT':
@@ -93,17 +94,17 @@ def internal_insert_user_data(data, headers, records):
 
 
 def delete_record_and_commit(record_id):
-    ShortTextDatum.query.filter_by(record_id=record_id).delete()
-    IntDatum.query.filter_by(record_id=record_id).delete()
-    NumericDatum.query.filter_by(record_id=record_id).delete()
-    DateDatum.query.filter_by(record_id=record_id).delete()
-    BooleanDatum.query.filter_by(record_id=record_id).delete()
-    TimestampDatum.query.filter_by(record_id=record_id).delete()
-    TextDatum.query.filter_by(record_id=record_id).delete()
+    ShortTextDatum.query.filter_by(_id=record_id).delete()
+    IntDatum.query.filter_by(_id=record_id).delete()
+    NumericDatum.query.filter_by(_id=record_id).delete()
+    DateDatum.query.filter_by(_id=record_id).delete()
+    BooleanDatum.query.filter_by(_id=record_id).delete()
+    TimestampDatum.query.filter_by(_id=record_id).delete()
+    TextDatum.query.filter_by(_id=record_id).delete()
 
     db.session.commit()
 
-    Record.query.filter_by(record_id=record_id).delete()
+    Record.query.filter_by(_id=record_id).delete()
     db.session.commit()
 
 
