@@ -170,7 +170,7 @@ def import_data():
                 headers.append(header)
             data = data[1:]
         else:
-            headers = db.session.query(Field.name).filter(Field.charity_id == current_user._id).order_by(
+            headers = db.session.query().filter_by(charity_id =current_user.charity_id).order_by(
                 Field.order).all()
 
         try:
