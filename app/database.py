@@ -7,18 +7,19 @@ from sqlalchemy.sql import text
 from .secrets import DB_CONNECTOR
 from . import db
 from .models import *
+from .util import check_email_format
 
 
 def get_field_names(charity_id: int) -> list:
     return db.session.query(Field.name).filter(Field.charity_id == charity_id).all()
 
-def get_sql_type(field_type):
-    dictionary = {"SHORT_TEXT": ShortTextDatum, "INT": IntDatum,
-                  "DECIMAL": NumericDatum, "BOOLEAN": BooleanDatum,
-                  "DATE": DateDatum, "TEXT": TextDatum, "TIMESTAMP": TimestampDatum,
-                  "EMAIL": ShortTextDatum, "CURRENCY": NumericDatum}
 
-    return dictionary[field_type.upper()]
+dataTypes = {"SHORT_TEXT": ShortTextDatum, "INT": IntDatum,
+              "DECIMAL": NumericDatum, "BOOLEAN": BooleanDatum,
+              "DATE": DateDatum, "TEXT": TextDatum, "TIMESTAMP": TimestampDatum,
+              "EMAIL": ShortTextDatum, "CURRENCY": NumericDatum}
+def get_sql_type(field_type):
+    return dataTypes[field_type.upper()]
 
 
 def insert_fields_into_table(field_details, charity_id):
@@ -134,9 +135,3 @@ def insert_user_data(charity, data, headers):
 from sqlalchemy import create_engine, DDL
 
 
-email_pattern = re.compile(
-    r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)'
-)
-
-def check_email_format(text: str) -> bool:
-    return email_pattern.fullmatch(text) is not None
