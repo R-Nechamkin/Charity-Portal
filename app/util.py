@@ -16,6 +16,9 @@ email_pattern = re.compile(
     r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)'
 )
 
+def check_email_format(email: str) -> bool:
+    return email_pattern.fullmatch(email)
+
 def data_from_google_sheets(url, sheet_index):
     api_begin = "https://sheets.googleapis.com/v4/spreadsheets/" + url + '/'
     api_end = "?key=" + API_KEY['sheets']

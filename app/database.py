@@ -7,7 +7,6 @@ from sqlalchemy.sql import text
 from .secrets import DB_CONNECTOR
 from . import db
 from .models import *
-from .util import check_email_format
 
 
 def get_field_names(charity_id: int) -> list:
