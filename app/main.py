@@ -73,7 +73,7 @@ def fields():
     return render_template('fields.html')
 
 
-@main.route('/set-up/field-details/<num_fields>', methods=['GET', 'POST'])
+@main.route('/set-up/set-up/field-details/<num_fields>', methods=['GET', 'POST'])
 @login_required
 def field_details(num_fields):
     if request.method == 'POST':
